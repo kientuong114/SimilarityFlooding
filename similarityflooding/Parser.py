@@ -1,6 +1,5 @@
 import re
 import pprint
-import networkx as nx
 import pylab
 
 rx_dict = {
@@ -8,16 +7,7 @@ rx_dict = {
 }
 
 
-def _parse_line(line):
-    for key, rx in rx_dict.items():
-        match = rx.search(line)
-        if match:
-            return key, match
-
-    return None, None
-
-
-def parse_file(file_path):
+def parse_sql(file_path):
     # todo: discuss a better schema to use for all parsing options
     """
     The schema is organized as a dict whose keys are the name of the corresponding tables.
@@ -26,26 +16,41 @@ def parse_file(file_path):
     :param: filepath
     :return: returns the schema
     """
+
+    def _parse_line(line):
+        for key, rx in rx_dict.items():
+            match = rx.search(line)
+            if match:
+                return key, match
+
+        return None, None
+
     schema = {}
 
     with open(file_path, 'r') as file_object:
-        line = file_object.readline()
-        while line:
-            key, match = _parse_line(line)
-            if key == 'tableName':
-                table_name = match.group('tableName').split()[0]
-                print(table_name)
-                prep_table = []
+        query = file_object.read().replace('\n', ' ').replace('\t', '')
 
-                line = file_object.readline()
-                while line[0] != ')':
-                    print(line, end='')
-                    prep_table.append(line.strip().replace(',', '').split(' '))
+    queries = re.sub(' +', ' ', query).strip(' ').split(';')[:-1]
+    print(queries)
 
-                    line = file_object.readline()
-
-                schema.setdefault(table_name, prep_table)
+    """
+    line = file_object.readline()
+    while line:
+        key, match = _parse_line(line)
+        if key == 'tableName':
+            table_name = match.group('tableName').split()[0]
+            print(table_name)
+            prep_table = []
             line = file_object.readline()
+
+            while line[0] != ')':
+                print(line, end='')
+                prep_table.append(line.strip().replace(',', '').split(' '))
+                line = file_object.readline()
+
+            schema.setdefault(table_name, prep_table)
+        line = file_object.readline()
+    """
 
     return schema
 
@@ -107,10 +112,13 @@ def sql_ddl2graph(data, G):
 
 
 def main():
+    """
     print("Please insert the file path of the SQL DLL file")
     file_path = input()
     data = parse_file(file_path)
     pprint.pprint(data)
+    """
+    import networkx as nx
 
     G = nx.DiGraph()
     sql_ddl2graph(data, G)
