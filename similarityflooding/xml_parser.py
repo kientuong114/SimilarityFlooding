@@ -94,4 +94,4 @@ def schema_tree2Graph():
 
 
 if __name__ == "__main__":
-    parse_xml('test.xml')
+    parse_xml('test_schemas/test_schema.xml')

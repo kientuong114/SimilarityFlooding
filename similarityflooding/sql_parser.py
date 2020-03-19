@@ -1,7 +1,6 @@
 import re
 import pprint
-import pylab
-
+import _schema_graph_utils as sgu
 
 def parse_sql(file_path):
 
@@ -25,7 +24,7 @@ def sql_ddl2graph(data, G):
     G.add_node('Column')
     G.add_node('ColumnType')
 
-    index = 1
+    oid = sgu.OID_generator(char = '&')
 
     query_elements = []
     for table in data:
@@ -42,35 +41,26 @@ def sql_ddl2graph(data, G):
             if match is not None:
                 # Adding tableName and its components
                 table_name = match.group('tableName')
-                name_elem = '&' + str(index)
-                index += 1
+                name_elem = next(oid)
                 G.add_edge(name_elem, table_name, title='name')
                 G.add_edge(name_elem, 'Table', title='type')
             else:
                 match = creation_column.match(elements)
 
             # Adding the column with its SQLType
-            new_column = '&' + str(index)
-            index += 1
+            new_column = next(oid)
             name_column = match.group('nameColumn')
             G.add_edge(new_column, 'Column', title='type')
             G.add_edge(new_column, name_column, title='name')
             G.add_edge(name_elem, new_column, title='column')
 
-            new_SQLType = '&' + str(index)
-            index += 1
+            new_SQLType = next(oid)
             name_SQLType = match.group('SQLType')
             G.add_edge(new_column, new_SQLType, title='SQLType')
             G.add_edge(new_SQLType, 'ColumnType', title='type')
             G.add_edge(new_SQLType, name_SQLType, title='name')
 
-    # Displaying the graph
-    pos = nx.spring_layout(G, k=3)
-    edge_labels = nx.get_edge_attributes(G, 'title')
-    nx.draw(G, pos, with_labels=True, font_weight='bold')
-    nx.draw_networkx_edge_labels(G, pos, edge_labels=edge_labels)
-    pylab.show()
-
+    sgu.schema_graph_draw(G)
 
 def main():
     import networkx as nx
