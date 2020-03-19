@@ -24,7 +24,7 @@ def sql_ddl2graph(data, G):
     G.add_node('Column')
     G.add_node('ColumnType')
 
-    oid = sgu.OID_generator(char = '&')
+    oid = sgu.OID_generator(char='&')
 
     query_elements = []
     for table in data:
