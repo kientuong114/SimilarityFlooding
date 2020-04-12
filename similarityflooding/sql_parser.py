@@ -1,5 +1,7 @@
 import re
 import _schema_graph_utils as sgu
+import initial_map as im
+
 
 def parse_sql(file_path):
 
@@ -8,10 +10,15 @@ def parse_sql(file_path):
 
     queries = re.sub(' +', ' ', query).strip(' ').split(';')[:-1]
 
-    return queries
+    G = sql_ddl2graph(queries)
+
+    return G
 
 
-def sql_ddl2graph(data, G):
+def sql_ddl2graph(data):
+    import networkx as nx
+
+    G = nx.DiGraph()
 
     G.add_node('Table')
     G.add_node('Column')
@@ -20,12 +27,12 @@ def sql_ddl2graph(data, G):
     oid = sgu.OID_generator(char='&')
 
     query_elements = []
-    print(data)
+    #print(data)
     for table in data:
         temp = table.split(',')
         temp[-1] = temp[-1][:-2]    # Fixing open parenthesis of last element
         query_elements.append(temp)
-    print(query_elements)
+    #print(query_elements)
 
     creation_table = re.compile(r'\s*(CREATE TABLE )(?P<tableName>\w*)\s*(\()\s(?P<nameColumn>\w*)\s(?P<SQLtype>\S+)\s*(?P<other>.*)')
     creation_column = re.compile(r'\s*(?P<nameColumn>\w*)\s(?P<SQLtype>\S+)\s*(?P<other>.*)')
@@ -69,17 +76,19 @@ def sql_ddl2graph(data, G):
             G.add_edge(oid_SQLType, name_SQLType, title='name')
             G.add_edge(oid_column, oid_SQLType, title='SQLtype')
 
-    sgu.schema_graph_draw(G)
+    # sgu.schema_graph_draw(G)
 
+    return G
 
 def main():
-    import networkx as nx
 
-    print("Please insert the file path of the SQL DLL file")
-    file_path = input()
-    data = parse_sql(file_path)
-    G = nx.DiGraph()
-    sql_ddl2graph(data, G)
+    file_path = "test_schemas/test_schema_from_paper1.sql"
+    G = parse_sql(file_path)
+    file_path = "test_schemas/test_schema_from_paper2.sql"
+    H = parse_sql(file_path)
+
+    initial_map = im.generate(G, H)
+    #print(initial_map)
 
 
 if __name__ == '__main__':
