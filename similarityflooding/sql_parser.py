@@ -1,6 +1,5 @@
 import re
 import _schema_graph_utils as sgu
-import initial_map as im
 
 
 def parse_sql(file_path):
@@ -34,7 +33,8 @@ def sql_ddl2graph(data):
         query_elements.append(temp)
     #print(query_elements)
 
-    creation_table = re.compile(r'\s*(CREATE TABLE )(?P<tableName>\w*)\s*(\()\s(?P<nameColumn>\w*)\s(?P<SQLtype>\S+)\s*(?P<other>.*)')
+    creation_table = re.compile(r'\s*(CREATE TABLE )(?P<tableName>\w*)\s*(\()\s(?P<nameColumn>\w*)\s('
+                                r'?P<SQLtype>\S+)\s*(?P<other>.*)')
     creation_column = re.compile(r'\s*(?P<nameColumn>\w*)\s(?P<SQLtype>\S+)\s*(?P<other>.*)')
 
     elements = {}
@@ -80,7 +80,10 @@ def sql_ddl2graph(data):
 
     return G
 
+
 def main():
+    import initial_map as im
+    import pairwise_connectivity_graph as pcg
 
     file_path = "test_schemas/test_schema_from_paper1.sql"
     G = parse_sql(file_path)
@@ -89,6 +92,13 @@ def main():
 
     initial_map = im.generate(G, H)
     #print(initial_map)
+
+    pairwise_graph = pcg.generate(G, H)
+    # sgu.schema_graph_draw(pairwise_graph)
+    # print(pairwise_graph.number_of_nodes())
+    for edge in pairwise_graph.edges.data():
+        print(str(edge[0:2]) + " ; Edge Title: " + edge[2]['title'])
+
 
 
 if __name__ == '__main__':

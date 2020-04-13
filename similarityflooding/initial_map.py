@@ -16,8 +16,8 @@ def generate(G, H):
                     initial_map.append([g_node, h_node, val / 100])
 
     initial_map.sort(key=lambda x: x[2], reverse=True)      # sorting by val
-    print("printing initialMap generated with fuzzywuzzy")
-    for i in initial_map:
-        print(i)
+    # print("printing initialMap generated with fuzzywuzzy")
+    # for i in initial_map:
+    #     print(i)
 
     return initial_map
