@@ -3,51 +3,41 @@ import networkx as nx
 
 def generate(G, H):
 
-    # print(G.edges.data())
-    #
-    # for edge in G.edges.data():
-    #     print(edge[0] + " " + edge[1] + " " + edge[2]['title'])
+    # info about pairwise_graph_constructor: it's a dict where the keys are the title of the edges;
+    #   each key has as value a list made of two dicts, each for the two graphs;
+    #   the key of each dict is the node from which that edge leaves,
+    #   its values is a list of the nodes to which it goes to
+    # pairwise_graph_constructor is just used to facilitate the build of the pairwise_graph
+    pairwise_graph_constructor = {}
 
-    graph_constructor = {}  # the keys are the title of the edges
+    def build_graph_constructor(L, n_graph):
+        # note networkX .data representation: edge[0] contains the origin node, edge[1] contains the destination node,
+        #   edge[2] is a dict of all the parameters added to the edge. With edge[2]['title'] we can access the title
+        #   we have given to that edge (e.g. "name", "type", ...)
+        for edge in L.edges.data():
+            edge_title = edge[2]['title']
 
-    for edge in G.edges.data():
-        if edge[2]['title'] not in graph_constructor:
-            graph_constructor[edge[2]['title']] = []
-            graph_constructor[edge[2]['title']].insert(0, {})
-            graph_constructor[edge[2]['title']].insert(1, {})
-        if edge[0] not in graph_constructor[edge[2]['title']][0]:
-            graph_constructor[edge[2]['title']][0][edge[0]] = []
-        graph_constructor[edge[2]['title']][0][edge[0]].append(edge[1])
+            if edge_title not in pairwise_graph_constructor:  # if the key is not in pairwise_graph_constructor, add it
+                pairwise_graph_constructor[edge_title] = []
+                L_edge_with_title = pairwise_graph_constructor[edge_title]
+                L_edge_with_title.insert(0, {})
+                L_edge_with_title.insert(1, {})
+            L_edge_with_title = pairwise_graph_constructor[edge_title]
+            if edge[0] not in L_edge_with_title[n_graph]:     # if the node has not appeared yet as source, add it
+                L_edge_with_title[n_graph][edge[0]] = []
+            L_edge_with_title[n_graph][edge[0]].append(edge[1])
 
-    for edge in H.edges.data():
-        if edge[2]['title'] not in graph_constructor:
-            graph_constructor[edge[2]['title']] = []
-            graph_constructor[edge[2]['title']].insert(0, {})
-            graph_constructor[edge[2]['title']].insert(1, {})
-        if edge[0] not in graph_constructor[edge[2]['title']][1]:
-            graph_constructor[edge[2]['title']][1][edge[0]] = []
-        graph_constructor[edge[2]['title']][1][edge[0]].append(edge[1])
+    build_graph_constructor(G, 0)
+    build_graph_constructor(H, 1)
 
-    P = nx.DiGraph()
+    P = nx.DiGraph()     # The Pairwise Connectivity Graph
 
-    # for edge_title in graph_constructor.items():
-    #     print(edge_title)
-
-    for edge_title in graph_constructor.items():
+    for edge_title in pairwise_graph_constructor.items():
         for G_elem in edge_title[1][0].keys():
             for H_elem in edge_title[1][1].keys():
                 origin_node = tuple([G_elem, H_elem])
-                # print(str(G_elem) + " " + str(H_elem))
-                #P.add_node(origin_node)
-
                 for G_dest_of_elem in edge_title[1][0][G_elem]:
                     for H_dest_of_elem in edge_title[1][1][H_elem]:
-                        # print(G_dest_of_elem + " " + H_dest_of_elem + " " + edge_title[0])
                         P.add_edge(origin_node, tuple([G_dest_of_elem, H_dest_of_elem]), title=edge_title[0])
-                #     print()
-                # print("------------------------------------")
-
-
-
 
     return P
