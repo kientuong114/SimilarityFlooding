@@ -4,7 +4,7 @@ import _schema_graph_utils as sgu
 
 class STNode:
     """Schema Tree Node
-    
+
     A Schema Tree is a n-ary tree which represents a hierachical data set.
     A Schema Tree should be created only via the parsing functions (e.g. parse_xml())
     Note that since Python 3.7 dicts are now ordered by default.
@@ -66,6 +66,18 @@ def post_order_walk(root):
         yield from post_order_walk(child)
     yield root
 
+def pre_order_walk(root):
+    """Generator of STNode objects, from a pre-order walk of the tree starting from root
+
+    Args:
+        root (str): the root node of the tree to be printed
+    """
+
+    yield root
+    for tag, child in root.children.items():
+        yield from post_order_walk(child)
+
+
 
 def parse_xml(file_path):
     """Return the schema tree for the xml file located in file_path
@@ -125,12 +137,12 @@ def schema_tree2Graph(root):
 
         for i, atb in enumerate(node.attrib.keys()):
             G.add_node(atb, type='literal')
-            G.add_edge(curr_oid, atb, title='attrib:'+str(i))
+            G.add_edge(curr_oid, atb, title='attrib', prog_num = i)
 
         for i, child in enumerate(node.children_tags):
             #Given the post-order walk, each child will already have a node
             child_oid = oid_map[child]
-            G.add_edge(curr_oid, child_oid, title='child:'+str(i))
+            G.add_edge(curr_oid, child_oid, title='child', prog_num = i)
 
     return G
 
