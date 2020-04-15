@@ -2,19 +2,40 @@ import pairwise_connectivity_graph as pcg
 import _schema_graph_utils as sgu
 from xml_parser import schema_tree2Graph, parse_xml
 from collections import defaultdict
+from enum import Enum, auto
+from functools import partial
 
-def generate(pair_conn_graph, prop_coeff_function=fast_inverse_product):
-    raise Exception("Not implemented yet")
-    return
+class PropFunc(Enum):
+    FAST_INVERSE_PROD = auto()
+    INVERSE_PROD = auto()
+    INVERSE_AVG = auto()
+    INVERSE_TOT_PROD = auto()
+    INVERSE_TOT_AVG = auto()
+    STOCHASTIC = auto()
+    CONSTANT = auto()
 
+class SimilarityFlooding:
+    def __init__(self, graphA, graphB, PCG=None, IPG=None):
+        self.graphA = graphA
+        self.graphB = graphB
+        self.PCG = PCG
+        self.IPG = IPG
 
-
-
-
-
-
-def fast_inverse_product(nodeA, graphA, nodeB, graphB, PCG):
+def _partition_neighbours_by_labels(node, graph, bidirection=True):
     node_by_labels = defaultdict(list)
+
+    if bidirection:
+        for *edge, data_dict in graph.in_edges(node, data=True):
+            node_by_labels[data_dict['title']].append(edge[0])
+        for *edge, data_dict in graph.out_edges(node, data=True):
+            node_by_labels[data_dict['title']].append(edge[1])
+    else:
+        for *edge, data_dict in graph.edges(node, data=True):
+            node_by_labels[data_dict['title']].append(edge[0])
+
+    return node_by_labels
+
+def fast_inverse_product(nodeA, nodeB, PCG):
 
     if (nodeA, nodeB) in PCG:
         node = (nodeA, nodeB)
@@ -23,15 +44,11 @@ def fast_inverse_product(nodeA, graphA, nodeB, graphB, PCG):
     else:
         raise ValueError("No such node in the Pairwise Connectivity Graph: ", (nodeA, nodeB))
 
-    for *edge, data_dict in PCG.in_edges(node, data=True):
-        node_by_labels[data_dict['title']].append(edge[0])
-
-    for *edge, data_dict in PCG.out_edges(node, data=True):
-        node_by_labels[data_dict['title']].append(edge[0])
+    node_by_labels = _partition_neighbours_by_labels(node, PCG)
 
     return {label: 1/float(len(nodes)) for label, nodes in node_by_labels.items()}
 
-def inverse_product(nodeA, graphA, nodeB, graphB, PCG):
+def inverse_product(nodeA, graphA, nodeB, graphB):
     """
 
     This function computes the pi-function of similarity propagation
@@ -41,29 +58,8 @@ def inverse_product(nodeA, graphA, nodeB, graphB, PCG):
 
     node_by_labels = {'graphA': {}, 'graphB': {}}
 
-    for *edge, data_dict in graphA.in_edges(nodeA, data=True):
-        if data_dict['title'] not in node_by_labels['graphA']:
-            node_by_labels['graphA'][data_dict['title']] = [edge[0]]
-        else:
-            node_by_labels['graphA'][data_dict['title']].append(edge[0])
-
-    for *edge, data_dict in graphA.out_edges(nodeA, data=True):
-        if data_dict['title'] not in node_by_labels['graphA']:
-            node_by_labels['graphA'][data_dict['title']] = [edge[1]]
-        else:
-            node_by_labels['graphA'][data_dict['title']].append(edge[1])
-
-    for *edge, data_dict in graphB.in_edges(nodeB, data=True):
-        if data_dict['title'] not in node_by_labels['graphB']:
-            node_by_labels['graphB'][data_dict['title']] = [edge[0]]
-        else:
-            node_by_labels['graphB'][data_dict['title']].append(edge[0])
-
-    for *edge, data_dict in graphB.out_edges(nodeB, data=True):
-        if data_dict['title'] not in node_by_labels['graphB']:
-            node_by_labels['graphB'][data_dict['title']] = [edge[1]]
-        else:
-            node_by_labels['graphB'][data_dict['title']].append(edge[1])
+    node_by_labels['graphA'].update(_partition_neighbours_by_labels(nodeA, graphA))
+    node_by_labels['graphB'].update(_partition_neighbours_by_labels(nodeB, graphB))
 
     label_set_A = set(node_by_labels['graphA'].keys())
     label_set_B = set(node_by_labels['graphB'].keys())
@@ -80,19 +76,34 @@ def inverse_product(nodeA, graphA, nodeB, graphB, PCG):
 
     return label_coeffs
 
+def generate(sf, default_sim=1.0, prop_method=PropFunc.FAST_INVERSE_PROD):
+    import networkx as nx
+
+    if prop_method == PropFunc.FAST_INVERSE_PROD:
+        prop_func = partial(fast_inverse_product, PCG=sf.PCG)
+    elif prop_method == PropFunc.INVERSE_PROD:
+        prop_func = partial(inverse_product, graphA=sf.graphA, graphB=sf.graphB)
+    else:
+        raise ValueError(f"Propagation function {prop_coeff} not yet implemented")
+
+    ipg = nx.MultiDiGraph()
+
+    for edge in sf.PCG.in_edges(data=True):
+        if edge[0] not in ipg:
+            ipg.add_node(edge[0], sim=default_sim)
+        if edge[1] not in ipg:
+            ipg.add_node(edge[1], sim=default_sim)
+        edge_label = edge[2]['title']
+        ipg.add_edge(edge[0], edge[1], coeff=prop_func(*edge[0])[edge_label])
+        ipg.add_edge(edge[1], edge[0], coeff=prop_func(*edge[1])[edge_label])
+
+    return ipg
+
 if __name__ == "__main__":
     G1 = schema_tree2Graph(parse_xml('test_schemas/test_schema.xml'))
     G2 = schema_tree2Graph(parse_xml('test_schemas/test_schema_2.xml'))
 
     pcgraph = pcg.generate(G1, G2)
 
-    node1 = G1.nodes
-    node2 = G2.nodes
-
-    print(inverse_product('&1', G1, '&1', G2, pcgraph))
-    print(fast_inverse_product('&1', G1, '&1', G2, pcgraph))
-
-
-
-
-
+    ipg = generate(SimilarityFlooding(G1, G2, pcgraph))
+    sgu.schema_graph_draw(ipg)
