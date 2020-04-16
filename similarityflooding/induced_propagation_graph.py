@@ -2,12 +2,22 @@ import pairwise_connectivity_graph as pcg
 import _schema_graph_utils as sgu
 from xml_parser import schema_tree2Graph, parse_xml
 from collections import defaultdict
-from enum import Enum, auto
 from functools import partial
 import initial_map as im
 
 
-class SimilarityFlooding:
+class SFGraphs:
+    """Similarity Flooding Graphs class
+
+    This class holds a reference to all graphs necessary to apply the
+    Similarity Flooding algorithm and which are created step by step.
+
+    Attributes:
+        graphA: The first networkx graph on which to apply the algorithm
+        graphB: The second networkx graph on which to apply the algorithm
+        PCG: The Pairwise Connectivity Graph
+        IPG: The Induced Propagation Graph
+    """
     def __init__(self, graphA, graphB, PCG=None, IPG=None):
         self.graphA = graphA
         self.graphB = graphB
@@ -16,6 +26,16 @@ class SimilarityFlooding:
 
 
 def _partition_neighbours_by_labels(node, graph, bidirection=True):
+    """This method queries for all neighbours of node and splits them by edge label
+
+    Args:
+        node: the node from which to query the neighbours
+        graph: the graph from which the node is taken
+
+    Returns:
+        node_by_labels: a dict which has the edge labels as key and a list of the nodes
+                that have node at the other end of the edge, with that given label
+    """
     node_by_labels = defaultdict(list)
 
     if bidirection:
@@ -31,6 +51,19 @@ def _partition_neighbours_by_labels(node, graph, bidirection=True):
 
 
 def fast_inverse_product(nodeA, nodeB, sfg):
+    """Algorithm to calculate the pi propagation function by Inverse Product, fast version which uses PCG
+
+    This method computes the propagation coefficients for outward edges in the induced propagation graph.
+    With fast inverse product the propagation coefficient is 1/number_of_neighbors_in_PCG
+
+    Args:
+        nodeA: the first part of the PCG node
+        nodeB: the second part of the PCG node
+        sfg: the SFGraph instance which holds the current graphs
+
+    Returns:
+        dict: a dict with label as key and the propagation coefficient for that label as value
+    """
     PCG = sfg.PCG
 
     if (nodeA, nodeB) in PCG:
@@ -46,11 +79,19 @@ def fast_inverse_product(nodeA, nodeB, sfg):
 
 
 def inverse_product(nodeA, nodeB, sfg):
-    """
+    """Algorithm to calculate the pi propagation function by Inverse Product, slower but more general version.
 
-    This function computes the pi-function of similarity propagation
-    via inverse product for all common labels.
+    This method computes the propagation coefficients for outward edges in the induced propagation graph.
+    The propagation coefficient, for each label, is the reciprocal of the product of cardinality (inbound or outbound)
+    of node A for that label and the cardinality (in or outbound) of nodeb for that label
 
+    Args:
+        nodeA: the first part of the PCG node
+        nodeB: the second part of the PCG node
+        sfg: the SFGraph instance which holds the current graphs
+
+    Returns:
+        dict: a dict with label as key and the propagation coefficient for that label as value
     """
 
     node_by_labels = {'graphA': {}, 'graphB': {}}
@@ -74,20 +115,39 @@ def inverse_product(nodeA, nodeB, sfg):
     return label_coeffs
 
 
-def generate(sf, default_sim=1.0, prop_func=fast_inverse_product):
+def generate(sfg, sim=None, prop_func=fast_inverse_product):
+    """This method generates the Induced Propagation Graph from the Pairwise Connectivity Graph
+
+    An Induced Propagation Graph has the same nodes of the PCG but, for each edge, it instead has
+    two edges of opposite direction, with attribute coeff equal to the propagation coefficient
+    calculated via prop_func, the propagation coefficient function
+
+    Args:
+        sfg: the SFGraph instance which holds the current graphs
+        sim: a constant value that will be used as similarity for all nodes in IPG.
+                This value should be in range [0, 1]
+        prop_func: a function which takes a SFGraphs object and returns a dictionary
+                with edge labels as keys and the coefficient as value
+
+    Returns:
+        nx.MultiDiGraph: a NetworkX MultiDiGraph which represents the IPG
+    """
     import networkx as nx
 
-    initial_map = im.generate(sf.graphA, sf.graphB)
+    if sim == None:
+        initial_map = im.generate(sfg.graphA, sfg.graphB)
+    else:
+        initial_map = defaultdict(lambda: sim)
     ipg = nx.MultiDiGraph()
 
-    for edge in sf.PCG.in_edges(data=True):
+    for edge in sfg.PCG.in_edges(data=True):
         if edge[0] not in ipg:
             ipg.add_node(edge[0], sim=initial_map[edge[0]] if (edge[0] in initial_map) else default_sim)
         if edge[1] not in ipg:
             ipg.add_node(edge[1], sim=initial_map[edge[1]] if (edge[1] in initial_map) else default_sim)
         edge_label = edge[2]['title']
-        ipg.add_edge(edge[0], edge[1], coeff=prop_func(*edge[0], sf)[edge_label])
-        ipg.add_edge(edge[1], edge[0], coeff=prop_func(*edge[1], sf)[edge_label])
+        ipg.add_edge(edge[0], edge[1], coeff=prop_func(*edge[0], sfg)[edge_label])
+        ipg.add_edge(edge[1], edge[0], coeff=prop_func(*edge[1], sfg)[edge_label])
 
     return ipg
 
@@ -98,5 +158,5 @@ if __name__ == "__main__":
 
     pcgraph = pcg.generate(G1, G2)
 
-    ipg = generate(SimilarityFlooding(G1, G2, pcgraph))
+    ipg = generate(SFGraphs(G1, G2, PCG=pcgraph))
     sgu.schema_graph_draw(ipg)
