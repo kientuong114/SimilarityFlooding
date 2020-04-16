@@ -4,6 +4,8 @@ from xml_parser import schema_tree2Graph, parse_xml
 from collections import defaultdict
 from enum import Enum, auto
 from functools import partial
+import initial_map as im
+
 
 class PropFunc(Enum):
     FAST_INVERSE_PROD = auto()
@@ -14,12 +16,14 @@ class PropFunc(Enum):
     STOCHASTIC = auto()
     CONSTANT = auto()
 
+
 class SimilarityFlooding:
     def __init__(self, graphA, graphB, PCG=None, IPG=None):
         self.graphA = graphA
         self.graphB = graphB
         self.PCG = PCG
         self.IPG = IPG
+
 
 def _partition_neighbours_by_labels(node, graph, bidirection=True):
     node_by_labels = defaultdict(list)
@@ -35,6 +39,7 @@ def _partition_neighbours_by_labels(node, graph, bidirection=True):
 
     return node_by_labels
 
+
 def fast_inverse_product(nodeA, nodeB, PCG):
 
     if (nodeA, nodeB) in PCG:
@@ -47,6 +52,7 @@ def fast_inverse_product(nodeA, nodeB, PCG):
     node_by_labels = _partition_neighbours_by_labels(node, PCG)
 
     return {label: 1/float(len(nodes)) for label, nodes in node_by_labels.items()}
+
 
 def inverse_product(nodeA, graphA, nodeB, graphB):
     """
@@ -76,6 +82,7 @@ def inverse_product(nodeA, graphA, nodeB, graphB):
 
     return label_coeffs
 
+
 def generate(sf, default_sim=1.0, prop_method=PropFunc.FAST_INVERSE_PROD):
     import networkx as nx
 
@@ -86,18 +93,20 @@ def generate(sf, default_sim=1.0, prop_method=PropFunc.FAST_INVERSE_PROD):
     else:
         raise ValueError(f"Propagation function {prop_coeff} not yet implemented")
 
+    initial_map = im.generate(sf.graphA, sf.graphB)
     ipg = nx.MultiDiGraph()
 
     for edge in sf.PCG.in_edges(data=True):
         if edge[0] not in ipg:
-            ipg.add_node(edge[0], sim=default_sim)
+            ipg.add_node(edge[0], sim=initial_map[edge[0]] if (edge[0] in initial_map) else default_sim)
         if edge[1] not in ipg:
-            ipg.add_node(edge[1], sim=default_sim)
+            ipg.add_node(edge[1], sim=initial_map[edge[1]] if (edge[1] in initial_map) else default_sim)
         edge_label = edge[2]['title']
         ipg.add_edge(edge[0], edge[1], coeff=prop_func(*edge[0])[edge_label])
         ipg.add_edge(edge[1], edge[0], coeff=prop_func(*edge[1])[edge_label])
 
     return ipg
+
 
 if __name__ == "__main__":
     G1 = schema_tree2Graph(parse_xml('test_schemas/test_schema.xml'))
