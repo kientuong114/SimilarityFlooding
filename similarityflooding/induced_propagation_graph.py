@@ -7,16 +7,6 @@ from functools import partial
 import initial_map as im
 
 
-class PropFunc(Enum):
-    FAST_INVERSE_PROD = auto()
-    INVERSE_PROD = auto()
-    INVERSE_AVG = auto()
-    INVERSE_TOT_PROD = auto()
-    INVERSE_TOT_AVG = auto()
-    STOCHASTIC = auto()
-    CONSTANT = auto()
-
-
 class SimilarityFlooding:
     def __init__(self, graphA, graphB, PCG=None, IPG=None):
         self.graphA = graphA
@@ -40,7 +30,8 @@ def _partition_neighbours_by_labels(node, graph, bidirection=True):
     return node_by_labels
 
 
-def fast_inverse_product(nodeA, nodeB, PCG):
+def fast_inverse_product(nodeA, nodeB, sfg):
+    PCG = sfg.PCG
 
     if (nodeA, nodeB) in PCG:
         node = (nodeA, nodeB)
@@ -54,7 +45,7 @@ def fast_inverse_product(nodeA, nodeB, PCG):
     return {label: 1/float(len(nodes)) for label, nodes in node_by_labels.items()}
 
 
-def inverse_product(nodeA, graphA, nodeB, graphB):
+def inverse_product(nodeA, nodeB, sfg):
     """
 
     This function computes the pi-function of similarity propagation
@@ -83,15 +74,8 @@ def inverse_product(nodeA, graphA, nodeB, graphB):
     return label_coeffs
 
 
-def generate(sf, default_sim=1.0, prop_method=PropFunc.FAST_INVERSE_PROD):
+def generate(sf, default_sim=1.0, prop_func=fast_inverse_product):
     import networkx as nx
-
-    if prop_method == PropFunc.FAST_INVERSE_PROD:
-        prop_func = partial(fast_inverse_product, PCG=sf.PCG)
-    elif prop_method == PropFunc.INVERSE_PROD:
-        prop_func = partial(inverse_product, graphA=sf.graphA, graphB=sf.graphB)
-    else:
-        raise ValueError(f"Propagation function {prop_coeff} not yet implemented")
 
     initial_map = im.generate(sf.graphA, sf.graphB)
     ipg = nx.MultiDiGraph()
@@ -102,8 +86,8 @@ def generate(sf, default_sim=1.0, prop_method=PropFunc.FAST_INVERSE_PROD):
         if edge[1] not in ipg:
             ipg.add_node(edge[1], sim=initial_map[edge[1]] if (edge[1] in initial_map) else default_sim)
         edge_label = edge[2]['title']
-        ipg.add_edge(edge[0], edge[1], coeff=prop_func(*edge[0])[edge_label])
-        ipg.add_edge(edge[1], edge[0], coeff=prop_func(*edge[1])[edge_label])
+        ipg.add_edge(edge[0], edge[1], coeff=prop_func(*edge[0], sf)[edge_label])
+        ipg.add_edge(edge[1], edge[0], coeff=prop_func(*edge[1], sf)[edge_label])
 
     return ipg
 
