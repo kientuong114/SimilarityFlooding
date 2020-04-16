@@ -125,7 +125,6 @@ def generate(sfg, sim=None, prop_func=fast_inverse_product):
     Args:
         sfg: the SFGraph instance which holds the current graphs
         sim: a constant value that will be used as similarity for all nodes in IPG.
-                This value should be in range [0, 1]
         prop_func: a function which takes a SFGraphs object and returns a dictionary
                 with edge labels as keys and the coefficient as value
 
