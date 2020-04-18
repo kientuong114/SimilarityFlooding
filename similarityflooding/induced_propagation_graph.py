@@ -4,6 +4,7 @@ from xml_parser import schema_tree2Graph, parse_xml
 from collections import defaultdict
 from functools import partial
 import initial_map as im
+import networkx as nx
 
 
 class SFGraphs:
@@ -115,7 +116,7 @@ def inverse_product(nodeA, nodeB, sfg):
     return label_coeffs
 
 
-def generate(sfg, sim=None, prop_func=fast_inverse_product):
+def generate(sfg, default_sim=1.0, prop_func=fast_inverse_product):
     """This method generates the Induced Propagation Graph from the Pairwise Connectivity Graph
 
     An Induced Propagation Graph has the same nodes of the PCG but, for each edge, it instead has
@@ -131,19 +132,18 @@ def generate(sfg, sim=None, prop_func=fast_inverse_product):
     Returns:
         nx.MultiDiGraph: a NetworkX MultiDiGraph which represents the IPG
     """
-    import networkx as nx
 
-    if sim == None:
-        initial_map = im.generate(sfg.graphA, sfg.graphB)
-    else:
-        initial_map = defaultdict(lambda: sim)
+    initial_map = im.generate(sfg.graphA, sfg.graphB)
+
     ipg = nx.MultiDiGraph()
 
     for edge in sfg.PCG.in_edges(data=True):
         if edge[0] not in ipg:
-            ipg.add_node(edge[0], sim=initial_map[edge[0]] if (edge[0] in initial_map) else default_sim)
+            init_sim = initial_map[edge[0]] if (edge[0] in initial_map) else default_sim
+            ipg.add_node(edge[0], init_sim=init_sim, curr_sim=init_sim, next_sim=0)
         if edge[1] not in ipg:
-            ipg.add_node(edge[1], sim=initial_map[edge[1]] if (edge[1] in initial_map) else default_sim)
+            init_sim = initial_map[edge[1]] if (edge[1] in initial_map) else default_sim
+            ipg.add_node(edge[1], init_sim=init_sim, curr_sim=init_sim, next_sim=0)
         edge_label = edge[2]['title']
         ipg.add_edge(edge[0], edge[1], coeff=prop_func(*edge[0], sfg)[edge_label])
         ipg.add_edge(edge[1], edge[0], coeff=prop_func(*edge[1], sfg)[edge_label])
@@ -151,11 +151,120 @@ def generate(sfg, sim=None, prop_func=fast_inverse_product):
     return ipg
 
 
+def fixpoint_incremental(node, ipg, norm_factor=None):
+    node_data = ipg.node[node]
+    increment=0
+    for node1, node2, data in ipg.in_edges(node, data=True):
+        increment += ipg.node[node1]['curr_sim'] * data['coeff']
+    for node1, node2, data in ipg.out_edges(node, data=True):
+        increment += ipg.node[node2]['curr_sim'] * data['coeff']
+
+    if norm_factor:
+        return (node_data['curr_sim'] + increment)/norm_factor
+    else:
+        return node_data['curr_sim'] + increment
+
+
+def fixpoint_A(node, ipg, norm_factor=None):
+    node_data = ipg.node[node]
+    increment=0
+    for node1, node2, data in ipg.in_edges(node, data=True):
+        increment += ipg.node[node1]['curr_sim'] * data['coeff']
+    for node1, node2, data in ipg.out_edges(node, data=True):
+        increment += ipg.node[node2]['curr_sim'] * data['coeff']
+
+    if norm_factor:
+        return (node_data['init_sim'] + increment)/norm_factor
+    else:
+        return node_data['init_sim'] + increment
+
+
+def fixpoint_B(node, ipg, norm_factor=None):
+    node_data = ipg.node[node]
+    increment=0
+    for node1, node2, data in ipg.in_edges(node, data=True):
+        increment += (ipg.node[node1]['curr_sim'] + ipg.node[node1]['init_sim'])* data['coeff']
+    for node1, node2, data in ipg.out_edges(node, data=True):
+        increment += (ipg.node[node2]['curr_sim'] + ipg.node[node2]['init_sim'])* data['coeff']
+
+    if norm_factor:
+        return (node_data['init_sim'] + increment)/norm_factor
+    else:
+        return node_data['init_sim'] + increment
+
+
+def fixpoint_C(node, ipg, norm_factor=None):
+    node_data = ipg.node[node]
+    increment=0
+    for node1, node2, data in ipg.in_edges(node, data=True):
+        increment += (ipg.node[node1]['curr_sim'] + ipg.node[node1]['init_sim'])* data['coeff']
+    for node1, node2, data in ipg.out_edges(node, data=True):
+        increment += (ipg.node[node2]['curr_sim'] + ipg.node[node2]['init_sim'])* data['coeff']
+
+    if norm_factor:
+        return (node_data['init_sim'] + node_data['curr_sim'] + increment)/norm_factor
+    else:
+        return node_data['init_sim'] + node_data['curr_sim'] + increment
+
+
+def flooding_step(ipg, fixpoint_formula, epsilon=0.1):
+    max_sim = 0
+    greatest_delta = 0
+    for node in sgu.BFS(ipg):
+        print(max_sim)
+        new_sim = fixpoint_formula(node, ipg)
+        max_sim = max(max_sim, new_sim)
+        print("Max sim: ", max_sim)
+        nx.set_node_attributes(ipg, new_sim, 'next_sim')
+        node_data = ipg.node[node]
+        greatest_delta = max(greatest_delta, node_data['next_sim'] - node_data['curr_sim'])
+
+    if greatest_delta < epsilon:
+        return False
+
+    for node in sgu.BFS(ipg):
+        node_data = ipg.node[node]
+        nx.set_node_attributes(ipg, node_data['next_sim']/max_sim, 'curr_sim')
+    return True
+
+def similarityFlooding(sf, max_steps=10, verbose=False, fixpoint_formula=fixpoint_incremental):
+    if not sf.PCG:
+        sf.PCG = pcg.generate(sf.graphA, sf.graphB)
+    if not sf.IPG:
+        sf.IPG = generate(sf)
+
+    if verbose:
+        print("INITAL GRAPHS")
+        print("---")
+        print("PAIRWISE CONNECTIVITY GRAPH")
+        for edge in sf.PCG.in_edges(data=True):
+            print(edge)
+        for edge in sf.PCG.out_edges(data=True):
+            print(edge)
+        print("---")
+        print("INDUCED PROPAGATION GRAPH")
+        for node in sf.IPG.nodes(data=True):
+            print(node)
+        for edge in sf.IPG.in_edges(data=True):
+            print(edge)
+        for edge in sf.IPG.out_edges(data=True):
+            print(edge)
+        print("---")
+        print("Starting computation of similarity flooding...")
+
+    for i in range(max_steps):
+        cont = flooding_step(sf.IPG, fixpoint_formula)
+        if verbose:
+            print("---")
+            print(f"INDUCED PROPAGATION GRAPH AT STEP {i+1}")
+            for node in sf.IPG.nodes(data=True):
+                print(node)
+        if not cont:
+            print("Terminated: residual vector has length less than epsilon")
+            break
+    print("Terminated: max steps reached")
+
 if __name__ == "__main__":
     G1 = schema_tree2Graph(parse_xml('test_schemas/test_schema.xml'))
     G2 = schema_tree2Graph(parse_xml('test_schemas/test_schema_2.xml'))
-
-    pcgraph = pcg.generate(G1, G2)
-
-    ipg = generate(SFGraphs(G1, G2, PCG=pcgraph))
-    sgu.schema_graph_draw(ipg)
+    similarityFlooding(SFGraphs(G1, G2), verbose=True, fixpoint_formula=fixpoint_B)

@@ -13,9 +13,9 @@ def BFS(G, startNode=None):
     if not startNode:
         startNode = list(G.nodes())[0]
 
-    q = deque(startNode)
+    q = deque((startNode,))
     visited = set()
-    visiting = set(startNode)
+    visiting = set((startNode,))
 
     while q:
         curr = q.popleft()
@@ -31,9 +31,9 @@ def DFS(G, startNode=None):
     if not startNode:
         startNode = list(G.nodes())[0]
 
-    q = deque(startNode)
+    q = deque((startNode,))
     visited = set()
-    visiting = set(startNode)
+    visiting = set((startNode,))
 
     while q:
         curr = q.pop()
