@@ -98,8 +98,8 @@ def inverse_product(nodeA, nodeB, sfg):
 
     node_by_labels = {'graphA': {}, 'graphB': {}}
 
-    node_by_labels['graphA'].update(_partition_neighbours_by_labels(nodeA, graphA))
-    node_by_labels['graphB'].update(_partition_neighbours_by_labels(nodeB, graphB))
+    node_by_labels['graphA'].update(_partition_neighbours_by_labels(nodeA, sfg.graphA))
+    node_by_labels['graphB'].update(_partition_neighbours_by_labels(nodeB, sfg.graphB))
 
     label_set_A = set(node_by_labels['graphA'].keys())
     label_set_B = set(node_by_labels['graphB'].keys())
@@ -167,12 +167,12 @@ def fixpoint_incremental(node, ipg, norm_factor=None):
     Returns:
         float: the similarity value after a flooding step
     """
-    node_data = ipg.node[node]
+    node_data = ipg.nodes[node]
     increment=0
     for node1, node2, data in ipg.in_edges(node, data=True):
-        increment += ipg.node[node1]['curr_sim'] * data['coeff']
+        increment += ipg.nodes[node1]['curr_sim'] * data['coeff']
     for node1, node2, data in ipg.out_edges(node, data=True):
-        increment += ipg.node[node2]['curr_sim'] * data['coeff']
+        increment += ipg.nodes[node2]['curr_sim'] * data['coeff']
 
     if norm_factor:
         return (node_data['curr_sim'] + increment)/norm_factor
@@ -196,12 +196,12 @@ def fixpoint_A(node, ipg, norm_factor=None):
         float: the similarity value after a flooding step
     """
 
-    node_data = ipg.node[node]
+    node_data = ipg.nodes[node]
     increment=0
     for node1, node2, data in ipg.in_edges(node, data=True):
-        increment += ipg.node[node1]['curr_sim'] * data['coeff']
+        increment += ipg.nodes[node1]['curr_sim'] * data['coeff']
     for node1, node2, data in ipg.out_edges(node, data=True):
-        increment += ipg.node[node2]['curr_sim'] * data['coeff']
+        increment += ipg.nodes[node2]['curr_sim'] * data['coeff']
 
     if norm_factor:
         return (node_data['init_sim'] + increment)/norm_factor
@@ -225,12 +225,12 @@ def fixpoint_B(node, ipg, norm_factor=None):
         float: the similarity value after a flooding step
     """
 
-    node_data = ipg.node[node]
+    node_data = ipg.nodes[node]
     increment=0
     for node1, node2, data in ipg.in_edges(node, data=True):
-        increment += (ipg.node[node1]['curr_sim'] + ipg.node[node1]['init_sim'])* data['coeff']
+        increment += (ipg.nodes[node1]['curr_sim'] + ipg.nodes[node1]['init_sim'])* data['coeff']
     for node1, node2, data in ipg.out_edges(node, data=True):
-        increment += (ipg.node[node2]['curr_sim'] + ipg.node[node2]['init_sim'])* data['coeff']
+        increment += (ipg.nodes[node2]['curr_sim'] + ipg.nodes[node2]['init_sim'])* data['coeff']
 
     if norm_factor:
         return increment / norm_factor
@@ -254,12 +254,12 @@ def fixpoint_C(node, ipg, norm_factor=None):
         float: the similarity value after a flooding step
     """
 
-    node_data = ipg.node[node]
+    node_data = ipg.nodes[node]
     increment=0
     for node1, node2, data in ipg.in_edges(node, data=True):
-        increment += (ipg.node[node1]['curr_sim'] + ipg.node[node1]['init_sim'])* data['coeff']
+        increment += (ipg.nodes[node1]['curr_sim'] + ipg.nodes[node1]['init_sim'])* data['coeff']
     for node1, node2, data in ipg.out_edges(node, data=True):
-        increment += (ipg.node[node2]['curr_sim'] + ipg.node[node2]['init_sim'])* data['coeff']
+        increment += (ipg.nodes[node2]['curr_sim'] + ipg.nodes[node2]['init_sim'])* data['coeff']
 
     if norm_factor:
         return (node_data['init_sim'] + node_data['curr_sim'] + increment)/norm_factor
@@ -296,10 +296,10 @@ def flooding_step(ipg, fixpoint_formula, epsilon=0.2):
         new_sim = fixpoint_formula(node, ipg)
         max_sim = max(max_sim, new_sim)
         nx.set_node_attributes(ipg, {node: new_sim}, 'next_sim')
-        node_data = ipg.node[node]
+        node_data = ipg.nodes[node]
 
     for node in sgu.BFS(ipg):
-        node_data = ipg.node[node]
+        node_data = ipg.nodes[node]
         nx.set_node_attributes(ipg, {node: node_data['next_sim']/max_sim}, 'curr_sim')
         delta_norm += (node_data['next_sim'] - node_data['curr_sim']) ** 2
 
