@@ -211,10 +211,8 @@ def flooding_step(ipg, fixpoint_formula, epsilon=0.1):
     max_sim = 0
     greatest_delta = 0
     for node in sgu.BFS(ipg):
-        print(max_sim)
         new_sim = fixpoint_formula(node, ipg)
         max_sim = max(max_sim, new_sim)
-        print("Max sim: ", max_sim)
         nx.set_node_attributes(ipg, new_sim, 'next_sim')
         node_data = ipg.node[node]
         greatest_delta = max(greatest_delta, node_data['next_sim'] - node_data['curr_sim'])
