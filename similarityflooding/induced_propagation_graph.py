@@ -5,6 +5,7 @@ from collections import defaultdict
 from functools import partial
 import initial_map as im
 import networkx as nx
+from math import sqrt
 
 
 class SFGraphs:
@@ -207,22 +208,23 @@ def fixpoint_C(node, ipg, norm_factor=None):
         return node_data['init_sim'] + node_data['curr_sim'] + increment
 
 
-def flooding_step(ipg, fixpoint_formula, epsilon=0.1):
+def flooding_step(ipg, fixpoint_formula, epsilon=0.2):
     max_sim = 0
-    greatest_delta = 0
+    delta_norm = 0
     for node in sgu.BFS(ipg):
         new_sim = fixpoint_formula(node, ipg)
         max_sim = max(max_sim, new_sim)
-        nx.set_node_attributes(ipg, new_sim, 'next_sim')
+        nx.set_node_attributes(ipg, {node: new_sim}, 'next_sim')
         node_data = ipg.node[node]
-        greatest_delta = max(greatest_delta, node_data['next_sim'] - node_data['curr_sim'])
-
-    if greatest_delta < epsilon:
-        return False
 
     for node in sgu.BFS(ipg):
         node_data = ipg.node[node]
-        nx.set_node_attributes(ipg, node_data['next_sim']/max_sim, 'curr_sim')
+        nx.set_node_attributes(ipg, {node: node_data['next_sim']/max_sim}, 'curr_sim')
+        delta_norm += (node_data['next_sim'] - node_data['curr_sim']) ** 2
+
+    if sqrt(delta_norm) < epsilon:
+        return False
+
     return True
 
 def similarityFlooding(sf, max_steps=10, verbose=False, fixpoint_formula=fixpoint_incremental):
@@ -265,4 +267,4 @@ def similarityFlooding(sf, max_steps=10, verbose=False, fixpoint_formula=fixpoin
 if __name__ == "__main__":
     G1 = schema_tree2Graph(parse_xml('test_schemas/test_schema.xml'))
     G2 = schema_tree2Graph(parse_xml('test_schemas/test_schema_2.xml'))
-    similarityFlooding(SFGraphs(G1, G2), verbose=True, fixpoint_formula=fixpoint_B)
+    similarityFlooding(SFGraphs(G1, G2), max_steps=1000, verbose=True, fixpoint_formula=fixpoint_incremental)
