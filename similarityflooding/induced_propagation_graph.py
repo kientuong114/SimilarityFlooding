@@ -153,6 +153,20 @@ def generate(sfg, default_sim=1.0, prop_func=fast_inverse_product):
 
 
 def fixpoint_incremental(node, ipg, norm_factor=None):
+    """This method is used to calculate the new similarity for a given node, with the base formula
+
+    This method calculates the new similarity by computing the increment, given by the sum, over all neighbors,
+    of their similarity multiplicated by the propagation coefficient on the edge.
+    This increment is summed to the current similarity of the node.
+
+    Args:
+        node: the node of which the new similarity will be calculated
+        ipg: the Induced Propagation Graph
+        norm_factor: a normalization factor, by which the newly computed similarity will be divided, if provided
+
+    Returns:
+        float: the similarity value after a flooding step
+    """
     node_data = ipg.node[node]
     increment=0
     for node1, node2, data in ipg.in_edges(node, data=True):
@@ -167,6 +181,21 @@ def fixpoint_incremental(node, ipg, norm_factor=None):
 
 
 def fixpoint_A(node, ipg, norm_factor=None):
+    """This method is used to calculate the new similarity for a given node, with the base formula
+
+    This method calculates the new similarity by computing the increment, given by the sum, over all neighbors,
+    of their similarity multiplicated by the propagation coefficient on the edge.
+    This increment is summed to the initial similarity of the node.
+
+    Args:
+        node: the node of which the new similarity will be calculated
+        ipg: the Induced Propagation Graph
+        norm_factor: a normalization factor, by which the newly computed similarity will be divided, if provided
+
+    Returns:
+        float: the similarity value after a flooding step
+    """
+
     node_data = ipg.node[node]
     increment=0
     for node1, node2, data in ipg.in_edges(node, data=True):
@@ -181,6 +210,21 @@ def fixpoint_A(node, ipg, norm_factor=None):
 
 
 def fixpoint_B(node, ipg, norm_factor=None):
+    """This method is used to calculate the new similarity for a given node, with the base formula
+
+    This method calculates the new similarity by computing the increment, given by the sum, over all neighbors,
+    of their current similarity plus their initial similarity, multiplicated by the propagation coefficient on the edge.
+    This increment is the resulting similarity.
+
+    Args:
+        node: the node of which the new similarity will be calculated
+        ipg: the Induced Propagation Graph
+        norm_factor: a normalization factor, by which the newly computed similarity will be divided, if provided
+
+    Returns:
+        float: the similarity value after a flooding step
+    """
+
     node_data = ipg.node[node]
     increment=0
     for node1, node2, data in ipg.in_edges(node, data=True):
@@ -189,12 +233,27 @@ def fixpoint_B(node, ipg, norm_factor=None):
         increment += (ipg.node[node2]['curr_sim'] + ipg.node[node2]['init_sim'])* data['coeff']
 
     if norm_factor:
-        return (node_data['init_sim'] + increment)/norm_factor
+        return increment / norm_factor
     else:
-        return node_data['init_sim'] + increment
+        return increment
 
 
 def fixpoint_C(node, ipg, norm_factor=None):
+    """This method is used to calculate the new similarity for a given node, with the base formula
+
+    This method calculates the new similarity by computing the increment, given by the sum, over all neighbors,
+    of their current similarity plus their initial similarity, multiplicated by the propagation coefficient on the edge.
+    This increment is summed to the sum of the initial similarity and the current similarity.
+
+    Args:
+        node: the node of which the new similarity will be calculated
+        ipg: the Induced Propagation Graph
+        norm_factor: a normalization factor, by which the newly computed similarity will be divided, if provided
+
+    Returns:
+        float: the similarity value after a flooding step
+    """
+
     node_data = ipg.node[node]
     increment=0
     for node1, node2, data in ipg.in_edges(node, data=True):
@@ -209,6 +268,28 @@ def fixpoint_C(node, ipg, norm_factor=None):
 
 
 def flooding_step(ipg, fixpoint_formula, epsilon=0.2):
+    """This method is used to execute a single step of the flooding algorithm.
+
+    This method computes, for each node, the new similarity by using fixpoint_formula and assigns the new
+    value to the new_sim field of the node.
+
+    After each node has been passed over, the new similarity is normalized by dividing by the greatest new
+    similarity seen and then assigned to the curr_sim field of the node.
+
+    If the square root of the sum of squares of all the similarity differences (between the new one and the old one)
+    is greater than epsilon, then this method returns False, otherwise it returns True.
+
+    In other words, if the euclidean norm of the similarity difference vector is less than epsilon, the computation is to be stopped.
+
+    Args:
+        ipg: the Induced Propagation Graph
+        fixpoint_formula: the function used to calculate the new similarity
+        epsilon: the value of the euclidean norm of the similarity difference vector below which the algorithm is stopped.
+
+    Returns:
+        boolean: True if the computation should continue, otherwise False.
+    """
+
     max_sim = 0
     delta_norm = 0
     for node in sgu.BFS(ipg):
@@ -228,6 +309,20 @@ def flooding_step(ipg, fixpoint_formula, epsilon=0.2):
     return True
 
 def similarityFlooding(sf, max_steps=10, verbose=False, fixpoint_formula=fixpoint_incremental):
+    """This method executes the similarity flooding algorithm, given SFGraphs instance containing at least the starting Graphs.
+
+    This method generates the Pairwise Connectivity Graph and the Induced Propagation Graph, if not already present in sf.
+    It then computes at most max_steps of the flooding algorithm by calling flooding_step.
+    The algorithm stop either if max_steps have been executed, or if flooding_step returned false, meaning that the precision bound
+    has been reached.
+
+    Args:
+        sf: the SFGraphs instance which contains at least the starting Graphs
+        max_steps: the maximum number of steps for which to execute the algorithm
+        verbose: if True, debug messages will be printed
+        fixpoint_formula: a function taking a node and an Induced Propagation Graph and returns the new similarity value for that node
+    """
+
     if not sf.PCG:
         sf.PCG = pcg.generate(sf.graphA, sf.graphB)
     if not sf.IPG:
