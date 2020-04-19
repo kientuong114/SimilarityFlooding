@@ -1,6 +1,7 @@
 import pairwise_connectivity_graph as pcg
 import _schema_graph_utils as sgu
 from xml_parser import schema_tree2Graph, parse_xml
+from sql_parser import parse_sql
 from collections import defaultdict
 from functools import partial
 import initial_map as im
@@ -292,14 +293,12 @@ def flooding_step(ipg, fixpoint_formula, epsilon=0.2):
 
     max_sim = 0
     delta_norm = 0
-    for node in sgu.BFS(ipg):
+    for node, node_data in ipg.nodes(data=True):
         new_sim = fixpoint_formula(node, ipg)
         max_sim = max(max_sim, new_sim)
         nx.set_node_attributes(ipg, {node: new_sim}, 'next_sim')
-        node_data = ipg.nodes[node]
 
-    for node in sgu.BFS(ipg):
-        node_data = ipg.nodes[node]
+    for node, node_data in ipg.nodes(data=True):
         nx.set_node_attributes(ipg, {node: node_data['next_sim']/max_sim}, 'curr_sim')
         delta_norm += (node_data['next_sim'] - node_data['curr_sim']) ** 2
 
@@ -360,6 +359,8 @@ def similarityFlooding(sf, max_steps=10, verbose=False, fixpoint_formula=fixpoin
     print("Terminated: max steps reached")
 
 if __name__ == "__main__":
-    G1 = schema_tree2Graph(parse_xml('test_schemas/test_schema.xml'))
-    G2 = schema_tree2Graph(parse_xml('test_schemas/test_schema_2.xml'))
-    similarityFlooding(SFGraphs(G1, G2), max_steps=1000, verbose=True, fixpoint_formula=fixpoint_incremental)
+    #G1 = schema_tree2Graph(parse_xml('test_schemas/test_schema_from_paper1.sql'))
+    #G2 = schema_tree2Graph(parse_xml('test_schemas/test_schema_from_paper2.sql'))
+    G1 = parse_sql('test_schemas/test_schema_from_paper1.sql')
+    G2 = parse_sql('test_schemas/test_schema_from_paper2.sql')
+    similarityFlooding(SFGraphs(G1, G2), max_steps=5, verbose=True, fixpoint_formula=fixpoint_incremental)
