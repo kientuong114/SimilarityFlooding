@@ -9,6 +9,23 @@ def OID_generator(char = 'a', start_num = 1):
         yield char + str(n)
         n += 1
 
+def is_OID(elem):
+    if elem[0] == '&' and len(elem) > 1:
+        for char in elem[1:]:
+            if not char.isdigit():
+                return False
+        return True
+    return False
+
+
+def get_names(G):
+    oid_name = {}
+    for elem in G.edges().data():
+        if elem[2]["title"] == "name":
+            oid_name[elem[0]] = elem[1]
+    return oid_name
+
+
 def BFS(G, startNode=None):
     if not startNode:
         startNode = list(G.nodes())[0]
@@ -26,6 +43,7 @@ def BFS(G, startNode=None):
             if child not in visited and child not in visiting:
                 visiting.add(child)
                 q.append(child)
+
 
 def DFS(G, startNode=None):
     if not startNode:
