@@ -34,3 +34,13 @@ def generate(G1, G2):
                         IM[tuple([g_node, h_node])] = val / 100
 
     return IM
+
+
+def print_IM(IM):
+    """Prints each element of IM and its values line by line
+
+    Args:
+        IM: initial map
+    """
+    for comb in IM.items():
+        print(comb)

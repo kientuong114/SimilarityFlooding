@@ -1,21 +1,39 @@
 import re
 import _schema_graph_utils as sgu
-import induced_propagation_graph as ipg
 
 
-def parse_sql(file_path):
+def parse_sql(path):
+    """Clears and returns the sql input file for sql_ddl2Graph to process
 
-    with open(file_path, 'r') as file_object:
+    Args:
+        path (str): relative file path to the sql file
+
+    Returns:
+          queries: the sql table divided in "queries"
+    """
+
+    with open(path, 'r') as file_object:
         query = file_object.read().replace('\n', ' ').replace('\t', '')
 
     queries = re.sub(' +', ' ', query).strip(' ').split(';')[:-1]
 
-    G = sql_ddl2graph(queries)
-
-    return G
+    return queries
 
 
-def sql_ddl2graph(data):
+def sql_ddl2Graph(data):
+    """Generates the graph from the sql parsed file.
+
+    NOTE: some edge cases are still not implemented (primary keys and other less common cases)
+
+    The graph is represented exactly as explained in the paper: with OIDs and the edges match the nomenclature
+
+
+    Args:
+        data: sql file parsed by parse_sql
+
+    Returns:
+        G: the sql file in graph form
+    """
     import networkx as nx
 
     G = nx.DiGraph()
@@ -74,19 +92,6 @@ def sql_ddl2graph(data):
     return G
 
 
-def main():
-    import initial_map as im
-    import pairwise_connectivity_graph as pcg
-
-    file_path = "test_schemas/test_schema_from_paper1.sql"
-    G = parse_sql(file_path)
-    file_path = "test_schemas/test_schema_from_paper2.sql"
-    H = parse_sql(file_path)
-
-    pairwise_graph = pcg.generate(G, H)
-
-    induced_propagation_graph = ipg.generate(ipg.SimilarityFlooding(G, H, pairwise_graph))
-
-
 if __name__ == '__main__':
-    main()
+    G1 = sql_ddl2Graph(parse_sql("test_schemas/test_schema_from_paper1.sql"))
+    G2 = sql_ddl2Graph(parse_sql("test_schemas/test_schema_from_paper2.sql"))
