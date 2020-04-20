@@ -157,7 +157,7 @@ def fixpoint_incremental(node, ipg, norm_factor=None):
     """This method is used to calculate the new similarity for a given node, with the base formula
 
     This method calculates the new similarity by computing the increment, given by the sum, over all neighbors,
-    of their similarity multiplicated by the propagation coefficient on the edge.
+    of their similarity multiplied by the propagation coefficient on the edge.
     This increment is summed to the current similarity of the node.
 
     Args:
@@ -185,7 +185,7 @@ def fixpoint_A(node, ipg, norm_factor=None):
     """This method is used to calculate the new similarity for a given node, with the base formula
 
     This method calculates the new similarity by computing the increment, given by the sum, over all neighbors,
-    of their similarity multiplicated by the propagation coefficient on the edge.
+    of their similarity multiplied by the propagation coefficient on the edge.
     This increment is summed to the initial similarity of the node.
 
     Args:
@@ -214,7 +214,7 @@ def fixpoint_B(node, ipg, norm_factor=None):
     """This method is used to calculate the new similarity for a given node, with the base formula
 
     This method calculates the new similarity by computing the increment, given by the sum, over all neighbors,
-    of their current similarity plus their initial similarity, multiplicated by the propagation coefficient on the edge.
+    of their current similarity plus their initial similarity, multiplied by the propagation coefficient on the edge.
     This increment is the resulting similarity.
 
     Args:
@@ -243,7 +243,7 @@ def fixpoint_C(node, ipg, norm_factor=None):
     """This method is used to calculate the new similarity for a given node, with the base formula
 
     This method calculates the new similarity by computing the increment, given by the sum, over all neighbors,
-    of their current similarity plus their initial similarity, multiplicated by the propagation coefficient on the edge.
+    of their current similarity plus their initial similarity, multiplied by the propagation coefficient on the edge.
     This increment is summed to the sum of the initial similarity and the current similarity.
 
     Args:
@@ -307,6 +307,7 @@ def flooding_step(ipg, fixpoint_formula, epsilon=0.2):
 
     return True
 
+
 def similarityFlooding(sf, max_steps=10, verbose=False, fixpoint_formula=fixpoint_incremental):
     """This method executes the similarity flooding algorithm, given SFGraphs instance containing at least the starting Graphs.
 
@@ -358,9 +359,8 @@ def similarityFlooding(sf, max_steps=10, verbose=False, fixpoint_formula=fixpoin
             break
     print("Terminated: max steps reached")
 
+
 if __name__ == "__main__":
-    #G1 = schema_tree2Graph(parse_xml('test_schemas/test_schema_from_paper1.sql'))
-    #G2 = schema_tree2Graph(parse_xml('test_schemas/test_schema_from_paper2.sql'))
-    G1 = parse_sql('test_schemas/test_schema_from_paper1.sql')
-    G2 = parse_sql('test_schemas/test_schema_from_paper2.sql')
-    similarityFlooding(SFGraphs(G1, G2), max_steps=5, verbose=True, fixpoint_formula=fixpoint_incremental)
+    G1 = schema_tree2Graph(parse_xml('test_schemas/test_schema.xml'))
+    G2 = schema_tree2Graph(parse_xml('test_schemas/test_schema_2.xml'))
+    similarityFlooding(SFGraphs(G1, G2), max_steps=1000, verbose=True, fixpoint_formula=fixpoint_incremental)
