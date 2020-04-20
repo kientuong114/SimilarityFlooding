@@ -4,37 +4,28 @@ import induced_propagation_graph as ipg
 import _schema_graph_utils as sgu
 
 
-def select_filter(SF, option="marriage"):
+def select_filter(SF, option="marriage", verbose=True):
     """Selects the filter by adding typing the option. Currently only stable marriage is implemented
 
     Args:
         SF: similarity flooding output
         option: the type of filter requested
+        verbose: True if the result of the single steps are requested
     Returns:
         the result of the filter
     """
     if option.lower() == "marriage":
-        return filter_stable_marriage(SF)
-
-
-# def find_preferred(schema, oid):
-#     """Method that extracts from the schema the preferred OID
-#     (currently not used because the values are already sorted by preference)
-#     """
-#     pref_val = 0
-#     pref_oid = 0
-#     for elem in schema.items():
-#         if elem[0][0] == oid:
-#             if elem[1] > pref_val:
-#                 pref_val = elem[1]
-#                 pref_oid = elem[0][1]
-#
-#     return pref_oid
+        return filter_stable_marriage(SF, verbose)
 
 
 # filter_schema contains a dict of OIDs connection as tuples and their SF values
 def clear_sf(SF, min_sim=0.001, only_OID=True):
-    """This method is used to extract a reduced data structure of SF to use in the filter"""
+    """This method is used to extract a reduced data structure of SF to use in the filter
+
+    filtered_schema is a dict which has as keys tuples of OIDs, and as value their SF value
+
+    """
+
     filtered_schema = {}
     for node in SF.IPG.nodes(data=True):
         # Ignores the values that are lower than min_sim, and only does the pairing with OID values
@@ -53,6 +44,13 @@ def init_engagements_schemas(SF, schema1_engagements, schema2_engagements):
 
     schema1_engagement keeps track of the possible pair the element from the first graph may be pair with, and
     schema2_engagement keeps track of the elements it has paired with
+
+    schema1_engagement has as keys the nodes in SF associated with the first graph, and as value a list made of:
+        [0]: None (where the current engagement element will be stored)
+        [1]: tuples of sf value and the corresponding element in the second graph
+
+    schema2_engagement has as keys the nodes in SF associated with the second graph, and as value the element to it
+    is "engaged" with (initialized as None)
 
     Args:
         SF: The Similarity Flooding structure initialized and run
@@ -78,6 +76,7 @@ def filter_stable_marriage(SF, verbose=True):
 
     Args:
         SF: The Similarity Flooding structure initialized and run
+        verbose: True if the result of the single steps are requested
 
     Returns:
         engagements: a list of all the pairs
@@ -87,11 +86,11 @@ def filter_stable_marriage(SF, verbose=True):
     schema2_engagements = {}
     init_engagements_schemas(SF, schema1_engagements, schema2_engagements)
 
-    options = True
+    change = True
     step = 0
-    while options:
+    while change:
         step += 1
-        options = False
+        change = False
         for elem in schema1_engagements.items():
             if elem[1][0] is None:
                 possible_marriages = elem[1][1]
@@ -100,12 +99,13 @@ def filter_stable_marriage(SF, verbose=True):
                 if schema2_engagements[proposal[1]] is None:
                     schema2_engagements[proposal[1]] = (proposal[0], elem[0])
                     elem[1][0] = proposal[1]
+                    change = True
                 else:
                     if schema2_engagements[proposal[1]][0] < proposal[0]:
                         schema1_engagements[schema2_engagements[proposal[1]][1]][0] = None
                         schema2_engagements[proposal[1]] = (proposal[0], elem[0])
                         elem[1][0] = proposal[1]
-                options = True
+                        change = True
         if verbose:
             print("Step " + str(step) + " result:")
             for elem in schema1_engagements.items():
@@ -119,8 +119,27 @@ def filter_stable_marriage(SF, verbose=True):
     engagements = []
     for elem in schema1_engagements.items():
         engagements.append((elem[0], elem[1][0]))
+    # Adding the nodes of the second graph that have no engagement with the nodes of the first
+    for elem in schema2_engagements.items():
+        if elem[1] is None:
+            engagements.append((None, elem[0]))
 
     return engagements
+
+
+# def find_preferred(schema, oid):
+#     """Method that extracts from the schema the preferred OID
+#     (currently not used because the values are already sorted by preference)
+#     """
+#     pref_val = 0
+#     pref_oid = 0
+#     for elem in schema.items():
+#         if elem[0][0] == oid:
+#             if elem[1] > pref_val:
+#                 pref_val = elem[1]
+#                 pref_oid = elem[0][1]
+#
+#     return pref_oid
 
 
 if __name__ == "__main__":

@@ -33,7 +33,13 @@ def combine_oid_to_name_pairs(G1, G2, pairs):
 
     final = []
     for pair in pairs:
-        final.append((namesG1[pair[0]], namesG2[pair[1]]))
+        if pair[0] is not None and pair[1] is not None:
+            final.append((namesG1[pair[0]], namesG2[pair[1]]))
+        else:
+            if pair[0] is None:
+                final.append((None, namesG2[pair[1]]))
+            else:
+                final.append((namesG1[pair[0]], None))
 
     return final
 
