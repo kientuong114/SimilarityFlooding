@@ -3,11 +3,12 @@ from collections import deque
 import pylab
 
 
-def OID_generator(char = 'a', start_num = 1):
+def OID_generator(char='a', start_num=1):
     n = start_num
     while True:
         yield char + str(n)
         n += 1
+
 
 def is_OID(elem):
     if elem[0] == '&' and len(elem) > 1:
@@ -26,23 +27,35 @@ def get_names(G):
     return oid_name
 
 
-def BFS(G, startNode=None):
-    if not startNode:
-        startNode = list(G.nodes())[0]
+def combine_oid_to_name_pairs(G1, G2, pairs):
+    namesG1 = get_names(G1)
+    namesG2 = get_names(G2)
 
-    q = deque((startNode,))
-    visited = set()
-    visiting = set((startNode,))
+    final = []
+    for pair in pairs:
+        final.append((namesG1[pair[0]], namesG2[pair[1]]))
 
-    while q:
-        curr = q.popleft()
-        visiting.remove(curr)
-        yield curr
-        visited.add(curr)
-        for child in G.neighbors(curr):
-            if child not in visited and child not in visiting:
-                visiting.add(child)
-                q.append(child)
+    return final
+
+
+# unused
+# def BFS(G, startNode=None):
+#     if not startNode:
+#         startNode = list(G.nodes())[0]
+#
+#     q = deque((startNode,))
+#     visited = set()
+#     visiting = set((startNode,))
+#
+#     while q:
+#         curr = q.popleft()
+#         visiting.remove(curr)
+#         yield curr
+#         visited.add(curr)
+#         for child in G.neighbors(curr):
+#             if child not in visited and child not in visiting:
+#                 visiting.add(child)
+#                 q.append(child)
 
 
 def DFS(G, startNode=None):
@@ -63,6 +76,10 @@ def DFS(G, startNode=None):
                 visiting.add(child)
                 q.append(child)
 
+
+def schema_graph_print(G, data_rep=True):
+    for edge in G.edges(data=True):
+        print(edge)
 
 
 def schema_graph_draw(G, title='title'):
