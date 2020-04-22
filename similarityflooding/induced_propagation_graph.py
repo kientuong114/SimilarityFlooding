@@ -21,6 +21,7 @@ class SFGraphs:
         PCG: The Pairwise Connectivity Graph
         IPG: The Induced Propagation Graph
     """
+
     def __init__(self, graphA, graphB, PCG=None, IPG=None):
         self.graphA = graphA
         self.graphB = graphB
@@ -78,7 +79,7 @@ def fast_inverse_product(nodeA, nodeB, sfg):
 
     node_by_labels = _partition_neighbours_by_labels(node, PCG)
 
-    return {label: 1/float(len(nodes)) for label, nodes in node_by_labels.items()}
+    return {label: 1 / float(len(nodes)) for label, nodes in node_by_labels.items()}
 
 
 def inverse_product(nodeA, nodeB, sfg):
@@ -169,14 +170,12 @@ def fixpoint_incremental(node, ipg, norm_factor=None):
         float: the similarity value after a flooding step
     """
     node_data = ipg.nodes[node]
-    increment=0
+    increment = 0
     for node1, node2, data in ipg.in_edges(node, data=True):
         increment += ipg.nodes[node1]['curr_sim'] * data['coeff']
-    for node1, node2, data in ipg.out_edges(node, data=True):
-        increment += ipg.nodes[node2]['curr_sim'] * data['coeff']
 
     if norm_factor:
-        return (node_data['curr_sim'] + increment)/norm_factor
+        return (node_data['curr_sim'] + increment) / norm_factor
     else:
         return node_data['curr_sim'] + increment
 
@@ -198,14 +197,12 @@ def fixpoint_A(node, ipg, norm_factor=None):
     """
 
     node_data = ipg.nodes[node]
-    increment=0
+    increment = 0
     for node1, node2, data in ipg.in_edges(node, data=True):
         increment += ipg.nodes[node1]['curr_sim'] * data['coeff']
-    for node1, node2, data in ipg.out_edges(node, data=True):
-        increment += ipg.nodes[node2]['curr_sim'] * data['coeff']
 
     if norm_factor:
-        return (node_data['init_sim'] + increment)/norm_factor
+        return (node_data['init_sim'] + increment) / norm_factor
     else:
         return node_data['init_sim'] + increment
 
@@ -227,11 +224,9 @@ def fixpoint_B(node, ipg, norm_factor=None):
     """
 
     node_data = ipg.nodes[node]
-    increment=0
+    increment = 0
     for node1, node2, data in ipg.in_edges(node, data=True):
-        increment += (ipg.nodes[node1]['curr_sim'] + ipg.nodes[node1]['init_sim'])* data['coeff']
-    for node1, node2, data in ipg.out_edges(node, data=True):
-        increment += (ipg.nodes[node2]['curr_sim'] + ipg.nodes[node2]['init_sim'])* data['coeff']
+        increment += (ipg.nodes[node1]['curr_sim'] + ipg.nodes[node1]['init_sim']) * data['coeff']
 
     if norm_factor:
         return increment / norm_factor
@@ -256,19 +251,17 @@ def fixpoint_C(node, ipg, norm_factor=None):
     """
 
     node_data = ipg.nodes[node]
-    increment=0
+    increment = 0
     for node1, node2, data in ipg.in_edges(node, data=True):
-        increment += (ipg.nodes[node1]['curr_sim'] + ipg.nodes[node1]['init_sim'])* data['coeff']
-    for node1, node2, data in ipg.out_edges(node, data=True):
-        increment += (ipg.nodes[node2]['curr_sim'] + ipg.nodes[node2]['init_sim'])* data['coeff']
+        increment += (ipg.nodes[node1]['curr_sim'] + ipg.nodes[node1]['init_sim']) * data['coeff']
 
     if norm_factor:
-        return (node_data['init_sim'] + node_data['curr_sim'] + increment)/norm_factor
+        return (node_data['init_sim'] + node_data['curr_sim'] + increment) / norm_factor
     else:
         return node_data['init_sim'] + node_data['curr_sim'] + increment
 
 
-def flooding_step(ipg, fixpoint_formula, epsilon=0.2):
+def flooding_step(ipg, fixpoint_formula, epsilon=0.0002):
     """This method is used to execute a single step of the flooding algorithm.
 
     This method computes, for each node, the new similarity by using fixpoint_formula and assigns the new
@@ -299,8 +292,9 @@ def flooding_step(ipg, fixpoint_formula, epsilon=0.2):
         nx.set_node_attributes(ipg, {node: new_sim}, 'next_sim')
 
     for node, node_data in ipg.nodes(data=True):
-        nx.set_node_attributes(ipg, {node: node_data['next_sim']/max_sim}, 'curr_sim')
-        delta_norm += (node_data['next_sim'] - node_data['curr_sim']) ** 2
+        new_curr_sim = node_data['next_sim'] / max_sim
+        delta_norm += (node_data['curr_sim'] - new_curr_sim) ** 2
+        nx.set_node_attributes(ipg, {node: new_curr_sim}, 'curr_sim')
 
     if sqrt(delta_norm) < epsilon:
         return False
@@ -308,7 +302,7 @@ def flooding_step(ipg, fixpoint_formula, epsilon=0.2):
     return True
 
 
-def similarityFlooding(sf, max_steps=10, verbose=False, fixpoint_formula=fixpoint_incremental):
+def similarityFlooding(sf, max_steps=1000, verbose=False, fixpoint_formula=fixpoint_incremental):
     """This method executes the similarity flooding algorithm, given SFGraphs instance containing at least the starting Graphs.
 
     This method generates the Pairwise Connectivity Graph and the Induced Propagation Graph, if not already present in sf.
@@ -329,7 +323,7 @@ def similarityFlooding(sf, max_steps=10, verbose=False, fixpoint_formula=fixpoin
         sf.IPG = generate(sf)
 
     if verbose:
-        print("INITAL GRAPHS")
+        print("INITIAL GRAPHS")
         print("---")
         print("PAIRWISE CONNECTIVITY GRAPH")
         for edge in sf.PCG.in_edges(data=True):
@@ -351,7 +345,7 @@ def similarityFlooding(sf, max_steps=10, verbose=False, fixpoint_formula=fixpoin
         cont = flooding_step(sf.IPG, fixpoint_formula)
         if verbose:
             print("---")
-            print(f"INDUCED PROPAGATION GRAPH AT STEP {i+1}")
+            print(f"INDUCED PROPAGATION GRAPH AT STEP {i + 1}")
             for node in sf.IPG.nodes(data=True):
                 print(node)
         if not cont:
