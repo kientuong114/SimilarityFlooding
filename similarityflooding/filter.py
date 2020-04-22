@@ -57,6 +57,7 @@ def init_engagements_schemas(SF, schema1_engagements, schema2_engagements):
         schema1_engagements: the dict where to put the results of the first schema
         schema2_engagements: the dict where to put the results of the second schema
     """
+
     schema = clear_sf(SF)
     for key in schema.keys():
         if key[0] not in schema1_engagements:
@@ -67,6 +68,16 @@ def init_engagements_schemas(SF, schema1_engagements, schema2_engagements):
 
     for el in schema1_engagements.values():
         el[1].sort(reverse=True)
+
+
+# Working on the SelectThreshold function
+# def select_threshold(schema_engagements):
+#     for elem in schema_engagements.values():
+#         max_sim = 0
+#         for comb in elem[1]:
+#             max_sim = max(max_sim, comb[0])
+#         for comb in elem[1]:
+#             comb[0] = comb[0] / max_sim
 
 
 def filter_stable_marriage(SF, verbose=True):
@@ -99,13 +110,12 @@ def filter_stable_marriage(SF, verbose=True):
                 if schema2_engagements[proposal[1]] is None:
                     schema2_engagements[proposal[1]] = (proposal[0], elem[0])
                     elem[1][0] = proposal[1]
-                    change = True
                 else:
                     if schema2_engagements[proposal[1]][0] < proposal[0]:
                         schema1_engagements[schema2_engagements[proposal[1]][1]][0] = None
                         schema2_engagements[proposal[1]] = (proposal[0], elem[0])
                         elem[1][0] = proposal[1]
-                        change = True
+                change = True
         if verbose:
             print("Step " + str(step) + " result:")
             for elem in schema1_engagements.items():
