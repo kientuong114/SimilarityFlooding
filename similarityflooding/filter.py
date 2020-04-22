@@ -103,7 +103,7 @@ def filter_stable_marriage(SF, verbose=True):
         step += 1
         change = False
         for elem in schema1_engagements.items():
-            if elem[1][0] is None:
+            if elem[1][0] is None and len(elem[1][1]) > 0:
                 possible_marriages = elem[1][1]
                 proposal = possible_marriages[0]
                 del possible_marriages[0]
@@ -116,6 +116,7 @@ def filter_stable_marriage(SF, verbose=True):
                         schema2_engagements[proposal[1]] = (proposal[0], elem[0])
                         elem[1][0] = proposal[1]
                 change = True
+
         if verbose:
             print("Step " + str(step) + " result:")
             for elem in schema1_engagements.items():
@@ -156,7 +157,7 @@ if __name__ == "__main__":
     G1 = sql_ddl2Graph(parse_sql('test_schemas/test_schema_from_paper1.sql'))
     G2 = sql_ddl2Graph(parse_sql('test_schemas/test_schema_from_paper2.sql'))
     sf = ipg.SFGraphs(G1, G2)
-    ipg.similarityFlooding(sf, max_steps=1000, verbose=False, fixpoint_formula=ipg.fixpoint_incremental)
+    ipg.similarityFlooding(sf, max_steps=1000, verbose=False, fixpoint_formula=ipg.fixpoint_C)
 
     pairs = select_filter(sf)
 
