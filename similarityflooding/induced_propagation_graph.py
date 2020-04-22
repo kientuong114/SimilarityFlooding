@@ -119,7 +119,7 @@ def inverse_product(nodeA, nodeB, sfg):
     return label_coeffs
 
 
-def generate(sfg, default_sim=1.0, prop_func=fast_inverse_product):
+def generate(sfg, default_sim=0.00001, prop_func=fast_inverse_product):
     """This method generates the Induced Propagation Graph from the Pairwise Connectivity Graph
 
     An Induced Propagation Graph has the same nodes of the PCG but, for each edge, it instead has

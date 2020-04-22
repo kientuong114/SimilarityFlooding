@@ -91,7 +91,15 @@ def sql_ddl2Graph(data):
 
     return G
 
+def main():
+    #import initial_map as im
+    #import pairwise_connectivity_graph as pcg
 
-if __name__ == '__main__':
-    G1 = sql_ddl2Graph(parse_sql("test_schemas/test_schema_from_paper1.sql"))
-    G2 = sql_ddl2Graph(parse_sql("test_schemas/test_schema_from_paper2.sql"))
+    file_path = "test_schemas/test_schema_from_paper1.sql"
+    G = parse_sql(file_path)
+    file_path = "test_schemas/test_schema_from_paper2.sql"
+    H = parse_sql(file_path)
+
+    #pairwise_graph = pcg.generate(G, H)
+
+    #induced_propagation_graph = ipg.generate(ipg.SimilarityFlooding(G, H, pairwise_graph))
