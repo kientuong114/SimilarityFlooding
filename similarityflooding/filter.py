@@ -1,7 +1,7 @@
 from sql_parser import sql_ddl2Graph
 from sql_parser import parse_sql
 import induced_propagation_graph as ipg
-import _schema_graph_utils as sgu
+import schema_graph_utils as sgu
 
 
 def select_filter(SF, option="marriage", verbose=True):

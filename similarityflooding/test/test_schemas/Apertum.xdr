@@ -1,0 +1,335 @@
+<?xml version="1.0"?>
+<!-- APERTUM GREAT PLAINS Purchase Order Schema Version 1.0 -->
+<!-- Generated using APERTUM BTDesigner -->
+<!-- GREAT PLAINS Software -->
+<Schema name="APERTUM_PO_1" xmlns="urn:schemas-microsoft-com:xml-data" xmlns:dt="urn:schemas-microsoft-com:datatypes">
+<ElementType name="Order" content="eltOnly" model="open" order="many">
+<element type="POHead" minOccurs="1" maxOccurs="1"/>
+<element type="Buyer" minOccurs="1" maxOccurs="1"/>
+<element type="Supplier" minOccurs="0" maxOccurs="1"/>
+<element type="DeliverTo" minOccurs="0" maxOccurs="1"/>
+<element type="InvoiceTo" minOccurs="0" maxOccurs="1"/>
+<element type="POLine" minOccurs="1" maxOccurs="*"/>
+<element type="OrderTotal" minOccurs="0" maxOccurs="1"/>
+</ElementType>
+<ElementType name="POHead" content="eltOnly" model="open" order="seq">
+<description>Order head</description>
+<element type="OrderDetails" minOccurs="1" maxOccurs="1"/>
+<element type="Currency" minOccurs="1" maxOccurs="1"/>
+<element type="TermsOfPayment" minOccurs="0" maxOccurs="1"/>
+<element type="TermsOfDelivery" minOccurs="0" maxOccurs="1"/>
+</ElementType>
+<ElementType name="Buyer" content="eltOnly" model="open" order="seq">
+<description>Buyer</description>
+<element type="SupplierReferenceNo" minOccurs="0" maxOccurs="1"/>
+<element type="BuyerReferenceNo" minOccurs="0" maxOccurs="1"/>
+<element type="VAT_RegistrationNo" minOccurs="0" maxOccurs="1"/>
+<element type="Address" minOccurs="0" maxOccurs="1"/>
+<element type="Contact" minOccurs="0" maxOccurs="1"/>
+</ElementType>
+<ElementType name="Supplier" content="eltOnly" model="open" order="seq">
+<description>Supplier</description>
+<element type="SupplierReferenceNo" minOccurs="0" maxOccurs="1"/>
+<element type="BuyerReferenceNo" minOccurs="0" maxOccurs="1"/>
+<element type="VAT_RegistrationNo" minOccurs="0" maxOccurs="1"/>
+<element type="Address" minOccurs="0" maxOccurs="1"/>
+<element type="Contact" minOccurs="0" maxOccurs="1"/>
+</ElementType>
+<ElementType name="DeliverTo" content="eltOnly" model="open" order="seq">
+<description>Delivery</description>
+<element type="SupplierReferenceNo" minOccurs="0" maxOccurs="1"/>
+<element type="BuyerReferenceNo" minOccurs="0" maxOccurs="1"/>
+<element type="VAT_RegistrationNo" minOccurs="0" maxOccurs="1"/>
+<element type="Address" minOccurs="0" maxOccurs="1"/>
+<element type="Contact" minOccurs="0" maxOccurs="1"/>
+</ElementType>
+<ElementType name="InvoiceTo" content="eltOnly" model="open" order="seq">
+<description>Invoice</description>
+<element type="SupplierReferenceNo" minOccurs="0" maxOccurs="1"/>
+<element type="BuyerReferenceNo" minOccurs="0" maxOccurs="1"/>
+<element type="VAT_RegistrationNo" minOccurs="0" maxOccurs="1"/>
+<element type="Address" minOccurs="0" maxOccurs="1"/>
+<element type="Contact" minOccurs="0" maxOccurs="1"/>
+</ElementType>
+<ElementType name="POLine" content="eltOnly" model="open" order="seq">
+<description>Product Lines</description>
+<element type="LineNo" minOccurs="0" maxOccurs="1"/>
+<element type="Product" minOccurs="1" maxOccurs="1"/>
+<element type="Price" minOccurs="0" maxOccurs="1"/>
+<element type="Quantity" minOccurs="1" maxOccurs="1"/>
+<element type="RequestedDeliveryDate" minOccurs="0" maxOccurs="1"/>
+<element type="Discount" minOccurs="0" maxOccurs="1"/>
+<element type="Amount" minOccurs="0" maxOccurs="1"/>
+</ElementType>
+<ElementType name="OrderTotal" content="eltOnly" model="open" order="seq">
+<description>Order summary</description>
+<element type="NumberOfLines" minOccurs="0" maxOccurs="1"/>
+<element type="TotalAmount" minOccurs="0" maxOccurs="1"/>
+</ElementType>
+<ElementType name="OrderDetails" content="eltOnly" model="open" order="seq">
+<description>PO details</description>
+<element type="SupplierOrderReference" minOccurs="0" maxOccurs="1"/>
+<element type="SupplierOrderDate" minOccurs="0" maxOccurs="1"/>
+<element type="BuyerOrderReference" minOccurs="0" maxOccurs="1"/>
+<element type="BuyerOrderDate" minOccurs="0" maxOccurs="1"/>
+<element type="TextHeader" minOccurs="0" maxOccurs="1"/>
+<element type="TextFooter" minOccurs="0" maxOccurs="1"/>
+</ElementType>
+<ElementType name="Currency" content="eltOnly" model="open" order="seq">
+<description>Currency information</description>
+<element type="CurrencyCode" minOccurs="1" maxOccurs="1"/>
+</ElementType>
+<ElementType name="TermsOfPayment" content="eltOnly" model="open" order="seq">
+<description>Terms of payment</description>
+<element type="Description" minOccurs="0" maxOccurs="1"/>
+<element type="NetDays" minOccurs="0" maxOccurs="1"/>
+<element type="Discount1" minOccurs="0" maxOccurs="1"/>
+<element type="Discount2" minOccurs="0" maxOccurs="1"/>
+</ElementType>
+<ElementType name="TermsOfDelivery" content="eltOnly" model="open" order="seq">
+<description>Terms of delivery</description>
+<element type="DelivType" minOccurs="0" maxOccurs="1"/>
+<element type="TransportType" minOccurs="0" maxOccurs="1"/>
+</ElementType>
+<ElementType name="LineNo" content="textOnly" dt:type="string">
+<description>Order line number</description>
+</ElementType>
+<ElementType name="Product" content="eltOnly" model="open" order="seq">
+<description>Produkt identification</description>
+<element type="SupplierPartID" minOccurs="0" maxOccurs="1"/>
+<element type="SupplierPartDesc" minOccurs="0" maxOccurs="1"/>
+<element type="BuyerPartID" minOccurs="0" maxOccurs="1"/>
+<element type="BuyerPartDesc" minOccurs="0" maxOccurs="1"/>
+<element type="EAN" minOccurs="0" maxOccurs="1"/>
+</ElementType>
+<ElementType name="Price" content="eltOnly" model="open" order="seq">
+<description>Product price</description>
+<element type="UnitPrice" minOccurs="0" maxOccurs="1"/>
+<element type="PricePerUnitOfMeasure" minOccurs="0" maxOccurs="1"/>
+<element type="PriceQuotient" minOccurs="1" maxOccurs="1"/>
+</ElementType>
+<ElementType name="Quantity" content="eltOnly" model="open" order="seq">
+<description>Order quantity</description>
+<element type="QuantityAmount" minOccurs="0" maxOccurs="1"/>
+<element type="PackCode" minOccurs="0" maxOccurs="1"/>
+<element type="PackSize" minOccurs="0" maxOccurs="1"/>
+<element type="UnitOfMeasure" minOccurs="0" maxOccurs="1"/>
+</ElementType>
+<ElementType name="RequestedDeliveryDate" content="eltOnly" model="open" order="seq">
+<description>Delivery date</description>
+<element type="DateYear" minOccurs="0" maxOccurs="1"/>
+<element type="DateWeek" minOccurs="0" maxOccurs="1"/>
+<element type="Date" minOccurs="0" maxOccurs="1"/>
+</ElementType>
+<ElementType name="Discount" content="eltOnly" model="open" order="seq">
+<description>Discount</description>
+<element type="Percentage" minOccurs="0" maxOccurs="1"/>
+</ElementType>
+<ElementType name="Amount" content="eltOnly" model="open" order="seq">
+<description>Line amount</description>
+<element type="VAT_Rate" minOccurs="0" maxOccurs="1"/>
+<element type="VAT_Amount" minOccurs="0" maxOccurs="1"/>
+<element type="Amount_ExclVAT" minOccurs="0" maxOccurs="1"/>
+<element type="Amount_InclVAT" minOccurs="0" maxOccurs="1"/>
+</ElementType>
+<ElementType name="SupplierReferenceNo" content="textOnly" dt:type="string">
+<description>Reference number at the supplier's system</description>
+</ElementType>
+<ElementType name="BuyerReferenceNo" content="textOnly" dt:type="string">
+<description>Reference number at the buyer's system</description>
+</ElementType>
+<ElementType name="VAT_RegistrationNo" content="textOnly" dt:type="string">
+<description>VAT registration umber</description>
+</ElementType>
+<ElementType name="Address" content="eltOnly" model="open" order="seq">
+<description>Address information</description>
+<element type="Name1" minOccurs="0" maxOccurs="1"/>
+<element type="Name2" minOccurs="0" maxOccurs="1"/>
+<element type="Street" minOccurs="0" maxOccurs="1"/>
+<element type="PostCode" minOccurs="0" maxOccurs="1"/>
+<element type="City" minOccurs="0" maxOccurs="1"/>
+<element type="State" minOccurs="0" maxOccurs="1"/>
+<element type="CountryCode" minOccurs="0" maxOccurs="1"/>
+<element type="Country" minOccurs="0" maxOccurs="1"/>
+</ElementType>
+<ElementType name="Contact" content="eltOnly" model="open" order="seq">
+<description>Contact information</description>
+<element type="Title" minOccurs="0" maxOccurs="1"/>
+<element type="FirstName" minOccurs="0" maxOccurs="1"/>
+<element type="LastName" minOccurs="0" maxOccurs="1"/>
+<element type="JobTitle" minOccurs="0" maxOccurs="1"/>
+<element type="Phone" minOccurs="0" maxOccurs="1"/>
+<element type="Fax" minOccurs="0" maxOccurs="1"/>
+<element type="EMail" minOccurs="0" maxOccurs="1"/>
+</ElementType>
+<ElementType name="NumberOfLines" content="textOnly" dt:type="number"/>
+<ElementType name="TotalAmount" content="eltOnly" model="open" order="seq">
+<element type="VAT_Rate1" minOccurs="0" maxOccurs="1"/>
+<element type="VAT_Rate2" minOccurs="0" maxOccurs="1"/>
+<element type="VAT_Rate3" minOccurs="0" maxOccurs="1"/>
+<element type="VAT_Amount1" minOccurs="0" maxOccurs="1"/>
+<element type="VAT_Amount2" minOccurs="0" maxOccurs="1"/>
+<element type="VAT_Amount3" minOccurs="0" maxOccurs="1"/>
+<element type="VAT_AmountTotal" minOccurs="0" maxOccurs="1"/>
+<element type="Amount_ExclVAT" minOccurs="0" maxOccurs="1"/>
+<element type="Amount_InclVAT" minOccurs="0" maxOccurs="1"/>
+</ElementType>
+<ElementType name="QuantityAmount" content="textOnly" dt:type="number">
+<description>Quantity</description>
+</ElementType>
+<ElementType name="PackCode" content="textOnly" dt:type="string">
+<description>Quantity code</description>
+</ElementType>
+<ElementType name="PackSize" content="textOnly" dt:type="number">
+<description>Package size</description>
+</ElementType>
+<ElementType name="UnitOfMeasure" content="textOnly" dt:type="string">
+<description>Unit of measure</description>
+</ElementType>
+<ElementType name="DelivType" content="textOnly" dt:type="string">
+<description>Type of delivery</description>
+</ElementType>
+<ElementType name="TransportType" content="textOnly" dt:type="string">
+<description>Type of transport</description>
+</ElementType>
+<ElementType name="Description" content="textOnly" dt:type="string">
+<description>Terms of payment text</description>
+</ElementType>
+<ElementType name="NetDays" content="textOnly" dt:type="number">
+<description>Net days</description>
+</ElementType>
+<ElementType name="Discount1" content="eltOnly" model="open" order="seq">
+<description>Discount 1</description>
+<element type="Percentage" minOccurs="0" maxOccurs="1"/>
+<element type="DaysDue" minOccurs="0" maxOccurs="1"/>
+</ElementType>
+<ElementType name="Discount2" content="eltOnly" model="open" order="seq">
+<description>Discount 2</description>
+<element type="Percentage" minOccurs="0" maxOccurs="1"/>
+<element type="DaysDue" minOccurs="0" maxOccurs="1"/>
+</ElementType>
+<ElementType name="SupplierPartID" content="textOnly" dt:type="string">
+<description>Part Identification at the supplier's system</description>
+</ElementType>
+<ElementType name="SupplierPartDesc" content="textOnly" dt:type="string">
+<description>Part description at the supplier's system</description>
+</ElementType>
+<ElementType name="BuyerPartID" content="textOnly" dt:type="string">
+<description>Part Identification at the buyer's system</description>
+</ElementType>
+<ElementType name="BuyerPartDesc" content="textOnly" dt:type="string">
+<description>Part description at the buyer's system</description>
+</ElementType>
+<ElementType name="EAN" content="textOnly" dt:type="string">
+<description>EAN identification number</description>
+</ElementType>
+<ElementType name="UnitPrice" content="textOnly" dt:type="number">
+<description>Price related to "QuantityAmount=1"</description>
+</ElementType>
+<ElementType name="PricePerUnitOfMeasure" content="textOnly" dt:type="number">
+<description>Price related to "Quantity/UnitOfMeasure"</description>
+</ElementType>
+<ElementType name="PriceQuotient" content="textOnly" dt:type="number">
+<description>The quotient the prices has to be devided by</description>
+</ElementType>
+<ElementType name="DateYear" content="textOnly" dt:type="int">
+<description>Year of requested delivery date</description>
+</ElementType>
+<ElementType name="DateWeek" content="textOnly" dt:type="int">
+<description>Week of requested delivery date</description>
+</ElementType>
+<ElementType name="Date" content="textOnly" dt:type="date">
+<description>Requested delivery date</description>
+</ElementType>
+<ElementType name="Percentage" content="textOnly" dt:type="number">
+<description>Discount percentage</description>
+</ElementType>
+<ElementType name="CurrencyCode" content="textOnly" dt:type="string">
+<description>Currency code (e.g. "USD")</description>
+</ElementType>
+<ElementType name="SupplierOrderReference" content="textOnly" dt:type="string">
+<description>Order reference at the supplier's system</description>
+</ElementType>
+<ElementType name="SupplierOrderDate" content="textOnly" dt:type="date">
+<description>Order date at the supplier's system</description>
+</ElementType>
+<ElementType name="BuyerOrderReference" content="textOnly" dt:type="string">
+<description>Order reference at the buyer's system</description>
+</ElementType>
+<ElementType name="BuyerOrderDate" content="textOnly" dt:type="date">
+<description>Order date at the buyer's system</description>
+</ElementType>
+<ElementType name="TextHeader" content="textOnly" dt:type="string">
+<description>Narrative header text</description>
+</ElementType>
+<ElementType name="TextFooter" content="textOnly" dt:type="string">
+<description>Narrative footer text</description>
+</ElementType>
+<ElementType name="Name1" content="textOnly" dt:type="string">
+<description>Name1</description>
+</ElementType>
+<ElementType name="Name2" content="textOnly" dt:type="string">
+<description>Name2</description>
+</ElementType>
+<ElementType name="Street" content="textOnly" dt:type="string">
+<description>Street</description>
+</ElementType>
+<ElementType name="PostCode" content="textOnly" dt:type="string">
+<description>Post/ZIP code</description>
+</ElementType>
+<ElementType name="City" content="textOnly" dt:type="string">
+<description>City</description>
+</ElementType>
+<ElementType name="State" content="textOnly" dt:type="string">
+<description>State or province</description>
+</ElementType>
+<ElementType name="CountryCode" content="textOnly" dt:type="string">
+<description>Country code (e.g. "D"=germany)</description>
+</ElementType>
+<ElementType name="Country" content="textOnly" dt:type="string">
+<description>Country (full country name)</description>
+</ElementType>
+<ElementType name="Title" content="textOnly" dt:type="string">
+<description>Form of address and/or title</description>
+</ElementType>
+<ElementType name="FirstName" content="textOnly" dt:type="string">
+<description>First name</description>
+</ElementType>
+<ElementType name="LastName" content="textOnly" dt:type="string">
+<description>Last name</description>
+</ElementType>
+<ElementType name="JobTitle" content="textOnly" dt:type="string">
+<description>Job title</description>
+</ElementType>
+<ElementType name="Phone" content="textOnly" dt:type="string">
+<description>Phone number</description>
+</ElementType>
+<ElementType name="Fax" content="textOnly" dt:type="string">
+<description>Fax number</description>
+</ElementType>
+<ElementType name="EMail" content="textOnly" dt:type="string">
+<description>E-mail address</description>
+</ElementType>
+<ElementType name="VAT_Rate" content="textOnly" dt:type="number">
+<description>VAT rate</description>
+</ElementType>
+<ElementType name="VAT_Amount" content="textOnly" dt:type="number">
+<description>VAT amount</description>
+</ElementType>
+<ElementType name="Amount_ExclVAT" content="textOnly" dt:type="number">
+<description>Line amount exclusive FAT</description>
+</ElementType>
+<ElementType name="Amount_InclVAT" content="textOnly" dt:type="number">
+<description>Line amount inclusive FAT</description>
+</ElementType>
+<ElementType name="VAT_Rate1" content="textOnly" dt:type="number"/>
+<ElementType name="VAT_Rate2" content="textOnly" dt:type="number"/>
+<ElementType name="VAT_Rate3" content="textOnly" dt:type="number"/>
+<ElementType name="VAT_Amount1" content="textOnly" dt:type="number"/>
+<ElementType name="VAT_Amount2" content="textOnly" dt:type="number"/>
+<ElementType name="VAT_Amount3" content="textOnly" dt:type="number"/>
+<ElementType name="VAT_AmountTotal" content="textOnly" dt:type="number"/>
+<ElementType name="DaysDue" content="textOnly" dt:type="number">
+<description>Days due</description>
+</ElementType>
+</Schema>

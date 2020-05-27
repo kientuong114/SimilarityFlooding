@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<!--Conforms to XDR Data Reduced Subset-->
+<Schema name="CIDXPOSCHEMA.xml" xmlns="urn:schemas-microsoft-com:xml-data" xmlns:dt="urn:schemas-microsoft-com:datatypes">
+   <ElementType name="PO" content="eltOnly" order="seq">
+      <element type="POHeader"/>
+      <element type="Contact"/>
+      <element type="POShipTo"/>
+      <element type="POBillTo"/>
+      <element type="POLines"/>
+   </ElementType>
+   <ElementType name="POHeader" content="empty">
+      <AttributeType name="poDate" dt:type="dateTime.tz" required="yes"/>
+      <AttributeType name="poNumber" dt:type="string" required="yes"/>
+      <attribute type="poDate"/>
+      <attribute type="poNumber"/>
+   </ElementType>
+   <ElementType name="Contact" content="empty">
+      <AttributeType name="contactName" dt:type="string" required="yes"/>
+      <AttributeType name="contactFunctionCode" dt:type="string" required="yes"/>
+      <AttributeType name="contactEmail" dt:type="string" required="no"/>
+      <AttributeType name="contactPhone" dt:type="string" required="no"/>
+      <attribute type="contactName"/>
+      <attribute type="contactFunctionCode" default="BD"/>
+      <attribute type="contactEmail"/>
+      <attribute type="contactPhone"/>
+   </ElementType>
+   <AttributeType name="city" dt:type="string" required="no"/>
+   <AttributeType name="attn" dt:type="string" required="no"/>
+   <AttributeType name="country" dt:type="string" required="no"/>
+   <AttributeType name="stateProvince" dt:type="string" required="no"/>
+   <AttributeType name="street4" dt:type="string" required="no"/>
+   <AttributeType name="street3" dt:type="string" required="no"/>
+   <AttributeType name="street2" dt:type="string" required="no"/>
+   <AttributeType name="street1" dt:type="string" required="no"/>
+   <AttributeType name="postalCode" dt:type="string" required="no"/>
+   <AttributeType name="entityidentifier" dt:type="string" required="no"/>
+   <ElementType name="POShipTo" content="empty">
+      <attribute type="entityidentifier" default="ST"/>
+      <attribute type="city"/>
+      <attribute type="attn"/>
+      <attribute type="country"/>
+      <attribute type="stateProvince"/>
+      <attribute type="street4"/>
+      <attribute type="street3"/>
+      <attribute type="street2"/>
+      <attribute type="street1"/>
+      <attribute type="postalCode"/>
+   </ElementType>
+   <ElementType name="POBillTo" content="empty">
+      <attribute type="entityidentifier" default="BT"/>
+      <attribute type="city"/>
+      <attribute type="attn"/>
+      <attribute type="country"/>
+      <attribute type="stateProvince"/>
+      <attribute type="street4"/>
+      <attribute type="street3"/>
+      <attribute type="street2"/>
+      <attribute type="street1"/>
+      <attribute type="postalCode"/>
+   </ElementType>
+   <ElementType name="POLines" content="eltOnly" order="seq">
+      <AttributeType name="startAt" dt:type="int" required="yes"/>
+      <AttributeType name="count" dt:type="int" required="yes"/>
+      <attribute type="startAt"/>
+      <attribute type="count"/>
+      <element type="Item" minOccurs="1" maxOccurs="*"/>
+   </ElementType>
+   <ElementType name="Item" content="empty">
+      <AttributeType name="uom" dt:type="enumeration" dt:values="PC UNIT" required="yes"/>
+      <AttributeType name="unitPrice" dt:type="float" required="yes"/>
+      <AttributeType name="qty" dt:type="number" required="yes"/>
+      <AttributeType name="partNo" dt:type="string" required="yes"/>
+      <AttributeType name="line" dt:type="int" required="yes"/>
+      <attribute type="uom"/>
+      <attribute type="unitPrice"/>
+      <attribute type="qty"/>
+      <attribute type="partNo"/>
+      <attribute type="line"/>
+   </ElementType>
+</Schema>

@@ -1,6 +1,5 @@
 import re
-import _schema_graph_utils as sgu
-
+import schema_graph_utils as sgu
 
 def parse_sql(path):
     """Clears and returns the sql input file for sql_ddl2Graph to process

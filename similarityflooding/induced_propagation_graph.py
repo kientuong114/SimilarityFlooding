@@ -1,5 +1,5 @@
 import pairwise_connectivity_graph as pcg
-import _schema_graph_utils as sgu
+import schema_graph_utils as sgu
 from xml_parser import schema_tree2Graph, parse_xml
 from sql_parser import parse_sql
 from collections import defaultdict
