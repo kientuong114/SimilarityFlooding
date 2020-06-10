@@ -1,5 +1,5 @@
 from collections import namedtuple
-from typing import Generator
+from typing import Generator, Dict, Optional, List, KeysView
 
 PathNode = namedtuple('PathNode', ['tag', 'attrib'])
 
@@ -18,11 +18,14 @@ class STNode:
         father: Reference to the father of tha node
     """
 
-    def __init__(self, tag: str, attrib: dict[str,str] = None) -> 'STNode':
-        self.tag = tag
-        self.attrib = attrib
-        self.children = {}
-        self.father = None
+    def __init__(self, tag: str, attrib: Dict[str,str] = None) -> None:
+        self.tag: str = tag
+        if not attrib:
+            self.attrib: Dict[str, str] = {}
+        else:
+            self.attrib = attrib
+        self.children: Dict[str, 'STNode'] = {}
+        self.father: Optional['STNode'] = None
 
     def __repr__(self):
         s = f"""STNode(tag = {self.tag}, """ +\
@@ -31,7 +34,7 @@ class STNode:
                     f"""father = {self.father.tag if self.father else None})"""
         return s
 
-    def add_child(self, child: 'STNode') -> None:
+    def add_child(self: 'STNode', child: 'STNode') -> None:
         """Adds child to the children dict of self and updates its father reference"""
         self.children.update({child.tag: child})
         child.father = self
@@ -41,15 +44,38 @@ class STNode:
         return STNode(path_node.tag, path_node.attrib)
 
     @property
-    def children_tags(self) -> list[str]:
+    def children_tags(self) -> KeysView[str]:
         return self.children.keys()
 
+def merge_path_nodes(node1: STNode, node2: STNode) -> STNode:
+    """Merges two trees by linking a node
+
+    Args:
+        node1 (STNode): first node to merge
+        node2 (STNode): second node to merge
+
+    Returns:
+        STNode: merged node
+    """
+    if node1.tag != node2.tag:
+        raise Exception("Cannot merge: nodes have differing tags")
+    if node1.father and node2.father:
+        raise Exception("Cannot merge: both nodes have father")
+    if len(node1.children) and len(node2.children) and node1.children != node2.children:
+        raise Exception("Cannot merge: nodes have differing children")
+
+    upper = node1 if node1.father else node2
+    lower = node2 if node1.father else node1
+
+    upper.children = lower.children
+
+    return upper
 
 def print_tree(root: STNode) -> None:
     """Print all nodes of the Schema Tree in pre-order
 
     Args:
-        root (str): the root node of the tree to be printed
+        root (STNode): the root node of the tree to be printed
     """
     print(root)
     for tag in sorted(root.children.keys()):
@@ -60,7 +86,7 @@ def post_order_walk(root: STNode) -> Generator[STNode, None, None]:
     """Generator of STNode objects, from a post-order walk of the tree starting from root
 
     Args:
-        root (str): the root node of the tree to be printed
+        root (STNode): the root node of the tree to be printed
     """
 
     for tag, child in root.children.items():
@@ -71,7 +97,7 @@ def pre_order_walk(root: STNode) -> Generator[STNode, None, None]:
     """Generator of STNode objects, from a pre-order walk of the tree starting from root
 
     Args:
-        root (str): the root node of the tree to be printed
+        root (STNode): the root node of the tree to be printed
     """
 
     yield root

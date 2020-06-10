@@ -1,8 +1,11 @@
+from typing import List, Optional
 import xml.etree.ElementTree as et
 import schema_graph_utils as sgu
 from STNode import *
 
 FilePath = str
+
+# TODO: update naming convention child -> element
 
 def parse_xml(file_path: FilePath):
     """Return the schema tree for the xml file located in file_path
@@ -11,7 +14,7 @@ def parse_xml(file_path: FilePath):
         file_path (str): Relative file path to the xml file
     """
 
-    def leaf_paths(root, path:list[PathNode]=[]):
+    def leaf_paths(root, path:List[PathNode]=[]):
         # Generator of all root-leaf paths, given an ElementTree node
         path = list(path)
         path.append(PathNode(root.tag, {k:None for k in root.keys()}))
@@ -42,7 +45,7 @@ def parse_xml(file_path: FilePath):
 
 
 def schema_tree2Graph(root: STNode):
-    import networkx as nx
+    import networkx as nx # type: ignore
 
     oid = sgu.OID_generator(char='&')
     G = nx.DiGraph()
