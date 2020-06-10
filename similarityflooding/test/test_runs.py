@@ -5,6 +5,7 @@ import schema_graph_utils as sgu
 from sql_parser import parse_sql, sql_ddl2Graph
 from xml_parser import schema_tree2Graph, parse_xml
 from xdr_parser import *
+from schema_graph_compressor import compress_graph
 import induced_propagation_graph as ipg
 import filter as f
 import networkx as nx
@@ -39,9 +40,20 @@ def test_on_xml():
     pairs = f.select_filter(sf)
     print(sgu.combine_oid_to_name_pairs(G1, G2, pairs))
 
-def test_on_xml_2():
+def test_on_xdr():
     G1 = schema_tree2Graph(parse_xdr('test_schemas/Apertum.xdr'))
     G2 = schema_tree2Graph(parse_xdr('test_schemas/CIDXPOSCHEMA.xdr'))
+    s1 = sgu.schema_graph_print(G1)
+    input("Press any key to continue")
+    s2 = sgu.schema_graph_print(G2)
+    input("Press any key to continue")
+    sf = gen_sf(G1, G2)
+    pairs = f.select_filter(sf)
+    print(sgu.combine_oid_to_name_pairs(G1, G2, pairs))
+
+def test_on_xdr_compressed():
+    G1 = compress_graph(schema_tree2Graph(parse_xdr('test_schemas/Apertum.xdr')))
+    G2 = compress_graph(schema_tree2Graph(parse_xdr('test_schemas/CIDXPOSCHEMA.xdr')))
     s1 = sgu.schema_graph_print(G1)
     input("Press any key to continue")
     s2 = sgu.schema_graph_print(G2)
@@ -57,4 +69,4 @@ def gen_sf(G1, G2):
 
 
 if __name__ == "__main__":
-    test_on_xml_2()
+    test_on_xdr_compressed()
