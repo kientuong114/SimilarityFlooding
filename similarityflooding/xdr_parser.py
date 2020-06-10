@@ -5,6 +5,7 @@ import schema_graph_utils as sgu
 from STNode import *
 
 FilePath = str
+blacklist = ('minOccurs', 'maxOccurs')
 
 def parse_xdr(file_path: FilePath):
     """Return the schema tree for the xdr file located in file_path
@@ -12,6 +13,8 @@ def parse_xdr(file_path: FilePath):
     Args:
         file_path (str): Relative file path to the xml file
     """
+
+    global blacklist
 
     xdr_tree = et.parse(file_path)
     root = xdr_tree.getroot()
@@ -29,7 +32,7 @@ def parse_xdr(file_path: FilePath):
             schema_subtree = STNode.from_path_node(
                 PathNode(
                     node.attrib['name'],
-                    { k:v for k,v in node.attrib.items() if k != 'name' }
+                    { k:v for k,v in node.attrib.items() if k != 'name' and k not in blacklist}
                 )
             )
 
@@ -41,7 +44,7 @@ def parse_xdr(file_path: FilePath):
                 child_node = STNode.from_path_node(
                     PathNode(
                         child.attrib['type'],
-                        { k:v for k,v in child.attrib.items() if k != 'type' }
+                        { k:v for k,v in child.attrib.items() if k != 'type' and k not in blacklist}
                     )
                 )
                 schema_subtree.add_child(child_node)
