@@ -346,7 +346,7 @@ def similarityFlooding(sf, max_steps=1000, verbose=False, fixpoint_formula=fixpo
         if verbose:
             print("---")
             print(f"INDUCED PROPAGATION GRAPH AT STEP {i + 1}")
-            for node in sf.IPG.nodes(data=True):
+            for node in sorted(sf.IPG.nodes(data=True), key=lambda x: x[1]['curr_sim']):
                 print(node)
         if not cont:
             print("Terminated: residual vector has length less than epsilon")
