@@ -39,11 +39,11 @@ def parse_xdr(file_path: FilePath):
             for child in node:
                 if 'description' in child.tag or 'AttributeType' in child.tag or 'ElementType' in child.tag:
                     # We currently ignore natural language descriptions and we defer the
-                    # anaylsis of Attribute and Element Typs on successive iterations
+                    # analysis of Attribute and Element Typs on successive iterations
                     continue
                 child_node = STNode.from_path_node(
                     PathNode(
-                        child.attrib['type'],
+                        node.attrib['name'] + '.' + child.attrib['type'],
                         { k:v for k,v in child.attrib.items() if k != 'type' and k not in blacklist}
                     )
                 )
@@ -53,8 +53,14 @@ def parse_xdr(file_path: FilePath):
             # We currently ignore other kinds of tags
             continue
 
+    def get_last_tag(tag):
+        return tag.split('.')[-1]
+
     # We now have a list of all ElementTypes, we now merge all entities to obtain
     # the schema.
+
+    # We start by finding the candidate roots i.e. the trees whose root is not a leaf
+    # of any other tree.
 
     candidate_roots = []
 
@@ -62,17 +68,20 @@ def parse_xdr(file_path: FilePath):
         pseudo_leaves = set()
         for tag, tr in schema_trees.items():
             if tag != tree_tag:
-                pseudo_leaves.update(tr.children.keys())
+                pseudo_leaves.update(
+                    map(get_last_tag, tr.children.keys())
+                )
         if tree_tag not in pseudo_leaves:
             candidate_roots.append(tree)
 
     def tree_merge(tree):
-        for children in tree.children.values():
+        for child in tree.children.values():
             # Check if the children can be prolonged by merging with another tree
-            if children.tag in schema_trees:
+            tag = get_last_tag(child.tag)
+            if tag in schema_trees:
                 # We can merge trees:
-                new_root = merge_path_nodes(children, schema_trees[children.tag])
-                del schema_trees[children.tag]
+                new_root = merge_path_nodes(child, schema_trees[tag])
+                del schema_trees[tag]
                 tree_merge(new_root)
 
     result = []

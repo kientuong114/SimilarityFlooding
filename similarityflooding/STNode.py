@@ -43,9 +43,14 @@ class STNode:
     def from_path_node(cls, path_node: PathNode) -> 'STNode':
         return STNode(path_node.tag, path_node.attrib)
 
+    @classmethod
+    def add_prefix_to_node(cls, node: 'STNode', prefix: str) -> 'STNode':
+        return STNode(prefix + '.' + node.tag, node.attrib)
+
     @property
     def children_tags(self) -> KeysView[str]:
         return self.children.keys()
+
 
 def merge_path_nodes(node1: STNode, node2: STNode) -> STNode:
     """Merges two trees by linking a node
@@ -57,19 +62,22 @@ def merge_path_nodes(node1: STNode, node2: STNode) -> STNode:
     Returns:
         STNode: merged node
     """
-    if node1.tag != node2.tag:
+
+    if node2.tag not in node1.tag:
         raise Exception("Cannot merge: nodes have differing tags")
     if node1.father and node2.father:
         raise Exception("Cannot merge: both nodes have father")
     if len(node1.children) and len(node2.children) and node1.children != node2.children:
         raise Exception("Cannot merge: nodes have differing children")
 
-    upper = node1 if node1.father else node2
-    lower = node2 if node1.father else node1
+    prefix = node1.tag[:node1.tag.rfind('.')]
 
-    upper.children = lower.children
+    for child_tag, child in node2.children.items():
+        new_child = STNode.add_prefix_to_node(child, prefix)
+        node1.children.update({prefix + '.' + child_tag: new_child})
+        new_child.father = node1
 
-    return upper
+    return node1
 
 def print_tree(root: STNode) -> None:
     """Print all nodes of the Schema Tree in pre-order
