@@ -261,7 +261,7 @@ def fixpoint_C(node, ipg, norm_factor=None):
         return node_data['init_sim'] + node_data['curr_sim'] + increment
 
 
-def flooding_step(ipg, fixpoint_formula, epsilon=0.0002):
+def flooding_step(ipg, fixpoint_formula, epsilon=0.000000002):
     """This method is used to execute a single step of the flooding algorithm.
 
     This method computes, for each node, the new similarity by using fixpoint_formula and assigns the new
@@ -296,6 +296,7 @@ def flooding_step(ipg, fixpoint_formula, epsilon=0.0002):
         delta_norm += (node_data['curr_sim'] - new_curr_sim) ** 2
         nx.set_node_attributes(ipg, {node: new_curr_sim}, 'curr_sim')
 
+    #print("\nFlooding step: " + str(sqrt(delta_norm)) + "\ndelta_norm: " + str(delta_norm) + "\n")
     if sqrt(delta_norm) < epsilon:
         return False
 

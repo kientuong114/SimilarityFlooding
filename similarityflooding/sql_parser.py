@@ -50,13 +50,18 @@ def sql_ddl2Graph(data):
     creation_column = re.compile(r'\s*(?P<nameColumn>\w*)\s(?P<SQLtype>\S+)\s*(?P<other>.*)')
 
     elements = {}
+    G.add_node('Table', type='desc')
+    G.add_node('Column', type='desc')
+    G.add_node('ColumnType', type='desc')
     for tables in query_elements:
         for rows in tables:
             match = creation_table.match(rows)
             if match is not None:
                 # adding the new table
                 name_table = match.group('tableName')
+                G.add_node(name_table, type='literal')
                 oid_table = next(oid)
+                G.add_node(oid_table, type='object')
                 key_table = (name_table, "Table")
                 elements[key_table] = oid_table
                 G.add_edge(oid_table, name_table, title='name')
@@ -66,9 +71,11 @@ def sql_ddl2Graph(data):
 
             # connecting the table with the column
             name_column = match.group('nameColumn')
+            G.add_node(name_column, type='literal')
             key_column = (name_column, "Column")
             if key_column not in elements:
                 oid_column = next(oid)
+                G.add_node(oid_column, type='object')
                 elements[key_column] = oid_column
             else:
                 oid_column = elements[key_column]
@@ -78,9 +85,11 @@ def sql_ddl2Graph(data):
 
             # connecting the column with its type
             name_SQLType = match.group('SQLtype')
+            G.add_node(name_SQLType, type='literal')
             key_SQLType = (name_SQLType, "SQLtype")
             if key_SQLType not in elements:
                 oid_SQLType = next(oid)
+                G.add_node(oid_SQLType, type='object')
                 elements[key_SQLType] = oid_SQLType
             else:
                 oid_SQLType = elements[key_SQLType]

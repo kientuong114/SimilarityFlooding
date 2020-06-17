@@ -28,7 +28,9 @@ def generate(G1, G2):
                 if h_node[0] != '&':
                     # In the first if we can add the options of most common values that we consider similar/identical
                     if g_node == "string" and h_node[0:7] == "varchar":
-                        IM[tuple([g_node, h_node])] = 1
+                        IM[(g_node, h_node)] = 1
+                    elif g_node == "int" and h_node[0:7] == "varchar":
+                        IM[(g_node, h_node)] = 0
                     else:
                         val = fuzz.ratio(g_node.lower(), h_node.lower())
                         IM[tuple([g_node, h_node])] = val / 100

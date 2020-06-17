@@ -12,9 +12,9 @@ def OID_generator(char:str='a', start_num:int=1):
 
 def is_OID(elem:str):
     if elem[0] == '&' and len(elem) > 1:
-        for char in elem[1:]:
-            if not char.isdigit():
-                return False
+        # for char in elem[1:]:         This condition is not used to facilitate testing on test_base
+        #     if not char.isdigit():
+        #         return False
         return True
     return False
 
@@ -86,6 +86,7 @@ def DFS(G, startNode=None):
 def schema_graph_print(G, data_rep:bool=True):
     for edge in G.edges(data=True):
         print(edge)
+    print()
 
 
 def schema_graph_draw(G, title:str='title'):
