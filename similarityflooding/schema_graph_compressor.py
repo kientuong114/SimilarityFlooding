@@ -12,19 +12,26 @@ def compress_graph(graph):
     """
 
     mapping = {}
+    to_delete = set()
     for node in graph.nodes.items():
         node_dict = node[1]
         if node_dict['type'] == 'object':
             name = list(filter(lambda x: x[2]['title'] == 'name', graph.out_edges(node[0], data=True)))[0][1]
             mapping.update({node[0]: name}) #Change OID to its name
             graph.remove_edge(node[0], name)
+            to_delete.add(name)
+    graph.remove_nodes_from(to_delete)
     return nx.relabel_nodes(graph, mapping)
 
 if __name__ == "__main__":
     #from xml_parser import parse_xml, schema_tree2Graph
     from xdr_parser import parse_xdr, schema_tree2Graph
+    #from sql_parser import parse_sql, sql_ddl2Graph
+    #G = sql_ddl2Graph(parse_sql('./test/test_schemas/test_schema_from_paper1.sql'))
     G = schema_tree2Graph(parse_xdr('./test/test_schemas/CIDXPOSCHEMA.xdr'))
     print('Non Compressed:')
     sgu.schema_graph_print(G)
     print('Compressed:')
-    sgu.schema_graph_print(compress_graph(G))
+    G1 = compress_graph(G)
+    print(G1.nodes(data=True))
+    sgu.schema_graph_print(G1)
