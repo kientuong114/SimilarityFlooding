@@ -1,0 +1,101 @@
+INCORRECT (FP): match PO, Order.Buyer.Address should not be present but is
+CORRECT (TP): match PO.POHeader, Order.POHead.OrderDetails is correct
+INCORRECT (FP): match PO.POHeader.poDate, Order.POHead.Currency.CurrencyCode should not be present but is
+INCORRECT (FP): match PO.POHeader.poNumber, Order.POHead.TermsOfDelivery.TransportType should not be present but is
+CORRECT (TP): match PO.Contact, Order.Buyer.Contact is correct
+INCORRECT (FP): match PO.Contact.contactFunctionCode, Order.POHead.TermsOfPayment.Discount1.Percentage should not be present but is
+INCORRECT (FP): match PO.Contact.contactEmail, Order.POHead.TermsOfPayment.Discount2.Percentage should not be present but is
+INCORRECT (FP): match PO.Contact.contactPhone, Order.POHead.TermsOfPayment.Discount2.DaysDue should not be present but is
+INCORRECT (FP): match PO.POShipTo, Order.OrderTotal.TotalAmount should not be present but is
+INCORRECT (FP): match PO.POShipTo.city, Order.POHead.TermsOfDelivery.DelivType should not be present but is
+INCORRECT (FP): match PO.POShipTo.attn, Order.POHead.TermsOfPayment.Discount1.DaysDue should not be present but is
+INCORRECT (FP): match PO.POShipTo.country, Order.POHead.TermsOfPayment should not be present but is
+INCORRECT (FP): match PO.POShipTo.stateProvince, Order.POHead.TermsOfDelivery should not be present but is
+INCORRECT (FP): match PO.POShipTo.street4, Order.POHead.Currency should not be present but is
+INCORRECT (FP): match PO.POShipTo.street3, Order.POLine.Amount.VAT_Rate should not be present but is
+INCORRECT (FP): match PO.POShipTo.street2, Order.POLine.Amount.VAT_Amount should not be present but is
+INCORRECT (FP): match PO.POShipTo.street1, Order.POLine.Amount.Amount_InclVAT should not be present but is
+INCORRECT (FP): match PO.POShipTo.postalCode, Order.POLine.Amount.Amount_ExclVAT should not be present but is
+INCORRECT (FP): match PO.POBillTo.entityidentifier, Order.POLine.RequestedDeliveryDate.DateYear should not be present but is
+INCORRECT (FP): match PO.POBillTo.city, Order.InvoiceTo.VAT_RegistrationNo should not be present but is
+INCORRECT (FP): match PO.POBillTo.attn, Order.InvoiceTo.SupplierReferenceNo should not be present but is
+INCORRECT (FP): match PO.POBillTo.stateProvince, Order.InvoiceTo.BuyerReferenceNo should not be present but is
+INCORRECT (FP): match PO.POBillTo.street4, Order.InvoiceTo.Address should not be present but is
+INCORRECT (FP): match PO.POBillTo.street3, Order.POLine.RequestedDeliveryDate.DateWeek should not be present but is
+INCORRECT (FP): match PO.POBillTo.street2, Order.POLine.RequestedDeliveryDate.Date should not be present but is
+INCORRECT (FP): match PO.POBillTo.street1, Order.POLine.Quantity.PackCode should not be present but is
+INCORRECT (FP): match PO.POBillTo.postalCode, Order.DeliverTo.VAT_RegistrationNo should not be present but is
+INCORRECT (FP): match PO.POLines.Item.uom, Order.POLine.Quantity.PackSize should not be present but is
+INCORRECT (FP): match PO.POLines.Item.unitPrice, Order.POLine.Price.PriceQuotient should not be present but is
+INCORRECT (FP): match PO.POLines.Item.qty, Order.POLine.Price.PricePerUnitOfMeasure should not be present but is
+INCORRECT (FP): match PO.POLines.startAt, Order.POLine.Discount.Percentage should not be present but is
+INCORRECT (FN): match for Order.POHead should be present but isn't
+INCORRECT (FN): match for Order.POHead.OrderDetails.SupplierOrderReference should be present but isn't
+INCORRECT (FN): match for Order.POHead.OrderDetails.SupplierOrderDate should be present but isn't
+INCORRECT (FN): match for Order.POHead.OrderDetails.BuyerOrderReference should be present but isn't
+INCORRECT (FN): match for Order.POHead.OrderDetails.BuyerOrderDate should be present but isn't
+CORRECT (TN): Order.POHead.OrderDetails.TextHeader has no match and there is no match in actual
+CORRECT (TN): Order.POHead.OrderDetails.TextFooter has no match and there is no match in actual
+CORRECT (TN): Order.POHead.TermsOfPayment.Discount1 has no match and there is no match in actual
+CORRECT (TN): Order.POHead.TermsOfPayment.Discount2 has no match and there is no match in actual
+CORRECT (TN): Order.POHead.TermsOfPayment.Description has no match and there is no match in actual
+CORRECT (TN): Order.POHead.TermsOfPayment.NetDays has no match and there is no match in actual
+CORRECT (TN): Order.Buyer has no match and there is no match in actual
+CORRECT (TN): Order.Buyer.Address.Name1 has no match and there is no match in actual
+CORRECT (TN): Order.Buyer.Address.Name2 has no match and there is no match in actual
+CORRECT (TN): Order.Buyer.Address.Street has no match and there is no match in actual
+CORRECT (TN): Order.Buyer.Address.PostCode has no match and there is no match in actual
+CORRECT (TN): Order.Buyer.Address.City has no match and there is no match in actual
+CORRECT (TN): Order.Buyer.Address.State has no match and there is no match in actual
+CORRECT (TN): Order.Buyer.Address.CountryCode has no match and there is no match in actual
+CORRECT (TN): Order.Buyer.Address.Country has no match and there is no match in actual
+CORRECT (TN): Order.Buyer.Contact.Title has no match and there is no match in actual
+INCORRECT (FN): match for Order.Buyer.Contact.FirstName should be present but isn't
+INCORRECT (FN): match for Order.Buyer.Contact.LastName should be present but isn't
+CORRECT (TN): Order.Buyer.Contact.JobTitle has no match and there is no match in actual
+INCORRECT (FN): match for Order.Buyer.Contact.Phone should be present but isn't
+CORRECT (TN): Order.Buyer.Contact.Fax has no match and there is no match in actual
+INCORRECT (FN): match for Order.Buyer.Contact.EMail should be present but isn't
+CORRECT (TN): Order.Buyer.SupplierReferenceNo has no match and there is no match in actual
+CORRECT (TN): Order.Buyer.BuyerReferenceNo has no match and there is no match in actual
+CORRECT (TN): Order.Buyer.VAT_RegistrationNo has no match and there is no match in actual
+CORRECT (TN): Order.Supplier has no match and there is no match in actual
+CORRECT (TN): Order.Supplier.SupplierReferenceNo has no match and there is no match in actual
+CORRECT (TN): Order.Supplier.BuyerReferenceNo has no match and there is no match in actual
+CORRECT (TN): Order.Supplier.VAT_RegistrationNo has no match and there is no match in actual
+CORRECT (TN): Order.Supplier.Address has no match and there is no match in actual
+INCORRECT (FN): match for Order.Supplier.Contact should be present but isn't
+INCORRECT (FN): match for Order.DeliverTo should be present but isn't
+CORRECT (TN): Order.DeliverTo.SupplierReferenceNo has no match and there is no match in actual
+CORRECT (TN): Order.DeliverTo.BuyerReferenceNo has no match and there is no match in actual
+CORRECT (TN): Order.DeliverTo.Address has no match and there is no match in actual
+INCORRECT (FN): match for Order.DeliverTo.Contact should be present but isn't
+INCORRECT (FN): match for Order.InvoiceTo should be present but isn't
+CORRECT (TN): Order.POLine.Product.SupplierPartDesc has no match and there is no match in actual
+INCORRECT (FN): match for Order.POLine.Product.BuyerPartID should be present but isn't
+CORRECT (TN): Order.POLine.Product.BuyerPartDesc has no match and there is no match in actual
+CORRECT (TN): Order.POLine.Product.EAN has no match and there is no match in actual
+CORRECT (TN): Order.POLine.Price has no match and there is no match in actual
+CORRECT (TN): Order.POLine.Quantity has no match and there is no match in actual
+CORRECT (TN): Order.POLine.RequestedDeliveryDate has no match and there is no match in actual
+CORRECT (TN): Order.POLine.Discount has no match and there is no match in actual
+CORRECT (TN): Order.POLine.Amount has no match and there is no match in actual
+INCORRECT (FN): match for Order.POLine.LineNo should be present but isn't
+CORRECT (TN): Order.OrderTotal has no match and there is no match in actual
+CORRECT (TN): Order.OrderTotal.TotalAmount.VAT_Rate1 has no match and there is no match in actual
+CORRECT (TN): Order.OrderTotal.TotalAmount.VAT_Rate2 has no match and there is no match in actual
+CORRECT (TN): Order.OrderTotal.TotalAmount.VAT_Rate3 has no match and there is no match in actual
+CORRECT (TN): Order.OrderTotal.TotalAmount.VAT_Amount1 has no match and there is no match in actual
+CORRECT (TN): Order.OrderTotal.TotalAmount.VAT_Amount2 has no match and there is no match in actual
+CORRECT (TN): Order.OrderTotal.TotalAmount.VAT_Amount3 has no match and there is no match in actual
+CORRECT (TN): Order.OrderTotal.TotalAmount.VAT_AmountTotal has no match and there is no match in actual
+CORRECT (TN): Order.OrderTotal.TotalAmount.Amount_ExclVAT has no match and there is no match in actual
+CORRECT (TN): Order.OrderTotal.TotalAmount.Amount_InclVAT has no match and there is no match in actual
+TP:  2
+TN:  47
+FP:  29
+FN:  15
+ACCURACY: 52.68817204301075%
+PRECISION: 6.451612903225806%
+RECALL: 11.76470588235294%
+F1 score: 0.11764705882352941

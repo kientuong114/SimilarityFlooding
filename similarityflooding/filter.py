@@ -3,6 +3,7 @@ from sql_parser import parse_sql
 import induced_propagation_graph as ipg
 import schema_graph_utils as sgu
 import networkx as nx
+import sys
 
 
 def select_filter(SF, option="marriage", verbose=True):
@@ -149,18 +150,18 @@ def filter_stable_marriage(SF, verbose=True):
     return engagements
 
 
-def print_pairs(pairs):
-    print("\nFinal result after filter application:")
+def print_pairs(pairs, f=sys.stdout):
+    print("\nFinal result after filter application:", file=f)
     for p in pairs:
         if p[0] is None:
-            print("no_match_found", end="")
+            print("no_match_found", end="", file=f)
         else:
-            print(p[0], end="")
-        print(end=" <-> ")
+            print(p[0], end="", file=f)
+        print(end="<->", file=f)
         if p[1] is None:
-            print("no_match_found")
+            print("no_match_found", file=f)
         else:
-            print(p[1])
+            print(p[1], file=f)
 
 
 if __name__ == "__main__":

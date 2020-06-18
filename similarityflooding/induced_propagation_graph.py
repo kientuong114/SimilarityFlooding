@@ -303,7 +303,7 @@ def flooding_step(ipg, fixpoint_formula, epsilon=0.000000002):
     return True
 
 
-def similarityFlooding(sf, max_steps=1000, verbose=False, fixpoint_formula=fixpoint_incremental):
+def similarityFlooding(sf, max_steps=1000, verbose=False, fixpoint_formula=fixpoint_incremental, tqdm=False):
     """This method executes the similarity flooding algorithm, given SFGraphs instance containing at least the starting Graphs.
 
     This method generates the Pairwise Connectivity Graph and the Induced Propagation Graph, if not already present in sf.
@@ -342,7 +342,13 @@ def similarityFlooding(sf, max_steps=1000, verbose=False, fixpoint_formula=fixpo
         print("---")
         print("Starting computation of similarity flooding...")
 
-    for i in range(max_steps):
+    if tqdm:
+        import tqdm
+        steps_range = tqdm.tqdm(range(max_steps))
+    else:
+        steps_range = range(max_steps)
+
+    for i in steps_range:
         cont = flooding_step(sf.IPG, fixpoint_formula)
         if verbose:
             print("---")
