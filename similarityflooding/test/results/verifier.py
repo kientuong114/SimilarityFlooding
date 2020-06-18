@@ -29,7 +29,7 @@ for line in result:
         if DEBUG:
             print(f'CORRECT (TP): match {line[0]}, {line[1]} is correct', file=output)
         true_positive += 1
-    elif is_match(line[0]) and line[1] not in actual:
+    elif is_match(line[0]) and (line[1] not in actual or (line[1] in actual and line[0] != actual[line[1]])):
         if DEBUG:
             print(f'INCORRECT (FP): match {line[0]}, {line[1]} should not be present but is', file=output)
         false_positive += 1
@@ -37,6 +37,9 @@ for line in result:
         if DEBUG:
             print(f"INCORRECT (FN): match for {line[1]} should be present but isn't", file=output)
         false_negative += 1
+    else:
+        if DEBUG:
+            print(f"UNKNOWN (UN): no information for match {line[0]}, {line[1]}", file=output)
 
 print('TP: ', true_positive, file=output)
 print('TN: ', true_negative, file=output)
