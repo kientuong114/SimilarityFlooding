@@ -1,0 +1,18 @@
+SQL test
+Uncompressed graphs
+Fixpoint Formula: C
+
+Final result after filter application:
+Personnel<->Employee
+Pno<->DeptName
+int<->varchar(70)
+Pname<->Salary
+string<->int
+Dept<->DeptNo
+Born<->Birthdate
+date<->dec(15.2)
+no_match_found<->EmpNo
+no_match_found<->EmpName
+no_match_found<->varchar(50)
+no_match_found<->date
+no_match_found<->Department

@@ -90,13 +90,13 @@ def gen_sf(G1, G2, formula=ipg.fixpoint_incremental):
     #  fixpoint_A
     #  fixpoint_B
     #  fixpoint_C 
-    ipg.similarityFlooding(sf, max_steps=100, verbose=False, fixpoint_formula=formula, tqdm=True)
+    ipg.similarityFlooding(sf, max_steps=0, verbose=False, fixpoint_formula=formula, tqdm=True)
     return sf
 
 
 if __name__ == "__main__":
     #test_on_sql_uncompressed()
-    FILE_BASE = 'results/sql/sql_2'
+    FILE_BASE = 'results/sql_only_initialmap_no_similflooding'
     for formula in (('incr', ipg.fixpoint_incremental), ('A', ipg.fixpoint_A), ('B', ipg.fixpoint_B), ('C', ipg.fixpoint_C)):
         with open(FILE_BASE+'_comp_'+formula[0]+'.txt', 'w+') as out:
             print('SQL test', file=out)

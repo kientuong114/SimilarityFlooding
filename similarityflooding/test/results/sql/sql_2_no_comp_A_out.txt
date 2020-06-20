@@ -1,0 +1,21 @@
+CORRECT (TP): match Personnel, Employee is correct
+INCORRECT (FP): match Pno, DeptNo should not be present but is
+CORRECT (TP): match int, int is correct
+INCORRECT (FP): match Pname, DeptName should not be present but is
+INCORRECT (FP): match string, varchar(70) should not be present but is
+INCORRECT (FP): match Dept, EmpName should not be present but is
+CORRECT (TP): match Born, Birthdate is correct
+CORRECT (TP): match date, date is correct
+INCORRECT (FN): match for EmpNo should be present but isn't
+INCORRECT (FN): match for varchar(50) should be present but isn't
+CORRECT (TN): Salary has no match and there is no match in actual
+CORRECT (TN): dec(15.2) has no match and there is no match in actual
+CORRECT (TN): Department has no match and there is no match in actual
+TP:  4
+TN:  3
+FP:  4
+FN:  2
+ACCURACY: 53.84615384615385%
+PRECISION: 50.0%
+RECALL: 66.66666666666666%
+F1 score: 0.6666666666666666
