@@ -8,15 +8,21 @@ INCORRECT (FP): match PO.Contact.contactFunctionCode, Order.Buyer.Contact.JobTit
 CORRECT (TP): match PO.Contact.contactEmail, Order.Buyer.Contact.EMail is correct
 CORRECT (TP): match PO.Contact.contactPhone, Order.Buyer.Contact.Phone is correct
 INCORRECT (FP): match PO.POShipTo, Order.OrderTotal.TotalAmount should not be present but is
+INCORRECT (FP): match PO.POShipTo.entityidentifier, Order.POLine.Quantity.UnitOfMeasure should not be present but is
 INCORRECT (FP): match PO.POShipTo.city, Order.POHead.Currency should not be present but is
 INCORRECT (FP): match PO.POShipTo.attn, Order.POLine.Product.EAN should not be present but is
+INCORRECT (FP): match PO.POShipTo.country, Order.InvoiceTo.Contact should not be present but is
+INCORRECT (FP): match PO.POShipTo.stateProvince, Order.OrderTotal.NumberOfLines should not be present but is
 INCORRECT (FP): match PO.POShipTo.street4, Order.POLine.Amount.Amount_ExclVAT should not be present but is
 INCORRECT (FP): match PO.POShipTo.street3, Order.POLine.Amount.VAT_Rate should not be present but is
 INCORRECT (FP): match PO.POShipTo.street2, Order.POLine.Product.SupplierPartDesc should not be present but is
+INCORRECT (FP): match PO.POShipTo.street1, Order.POHead should not be present but is
 INCORRECT (FP): match PO.POShipTo.postalCode, Order.OrderTotal should not be present but is
+INCORRECT (FP): match PO.POBillTo, Order.POLine should not be present but is
 INCORRECT (FP): match PO.POBillTo.entityidentifier, Order.POLine.Quantity.PackSize should not be present but is
 INCORRECT (FP): match PO.POBillTo.city, Order.Buyer.Address.City should not be present but is
 INCORRECT (FP): match PO.POBillTo.attn, Order.InvoiceTo.VAT_RegistrationNo should not be present but is
+INCORRECT (FP): match PO.POBillTo.country, Order.DeliverTo.Contact should not be present but is
 INCORRECT (FP): match PO.POBillTo.stateProvince, Order.InvoiceTo.SupplierReferenceNo should not be present but is
 INCORRECT (FP): match PO.POBillTo.street4, Order.Buyer.Address.Street should not be present but is
 INCORRECT (FP): match PO.POBillTo.street3, Order.InvoiceTo.Address should not be present but is
@@ -96,9 +102,9 @@ CORRECT (TN): Order.OrderTotal.TotalAmount.Amount_ExclVAT has no match and there
 CORRECT (TN): Order.OrderTotal.TotalAmount.Amount_InclVAT has no match and there is no match in actual
 TP:  9
 TN:  51
-FP:  25
+FP:  31
 FN:  11
-ACCURACY: 62.5%
-PRECISION: 26.47058823529412%
+ACCURACY: 58.82352941176471%
+PRECISION: 22.5%
 RECALL: 45.0%
 F1 score: 0.45
