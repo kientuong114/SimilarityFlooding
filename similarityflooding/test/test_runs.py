@@ -10,21 +10,21 @@ import induced_propagation_graph as ipg
 import filter as f
 import networkx as nx
 
-def test_on_sql():
-    Gtemp = sql_ddl2Graph(parse_sql('test_schemas/test_schema_from_paper1.sql'))
-    print(nx.get_node_attributes(Gtemp, 'type'))
-    sgu.schema_graph_print(Gtemp)
-    G1 = compress_graph(Gtemp)
-    print(nx.get_node_attributes(G1, 'type'))
-    sgu.schema_graph_print(G1)
+
+def test_on_sql_compressed(formula, outfile):
+    G1 = compress_graph(sql_ddl2Graph(parse_sql('test_schemas/test_schema_from_paper1.sql')))
     G2 = compress_graph(sql_ddl2Graph(parse_sql('test_schemas/test_schema_from_paper2.sql')))
-    node_attributes_A = nx.get_node_attributes(G1, 'type')
-    node_attributes_B = nx.get_node_attributes(G2, 'type')
-    print(node_attributes_A)
-    print(node_attributes_B)
-    sf = gen_sf(G1, G2)
+    sf = gen_sf(G1, G2, formula=formula)
     pairs = f.select_filter(sf)
-    f.print_pairs(pairs)
+    f.print_pairs(pairs, outfile)
+
+
+def test_on_sql_uncompressed(formula, outfile):
+    G1 = sql_ddl2Graph(parse_sql('test_schemas/test_schema_from_paper1.sql'))
+    G2 = sql_ddl2Graph(parse_sql('test_schemas/test_schema_from_paper2.sql'))
+    sf = gen_sf(G1, G2, formula=formula)
+    pairs = f.select_filter(sf)
+    f.print_pairs(sgu.combine_oid_to_name_pairs(G1, G2, pairs), outfile)
 
 
 def test_base():
@@ -95,16 +95,16 @@ def gen_sf(G1, G2, formula=ipg.fixpoint_incremental):
 
 
 if __name__ == "__main__":
-    #test_on_sql()
-    FILE_BASE = 'results/xdr_2'
+    #test_on_sql_uncompressed()
+    FILE_BASE = 'results/sql/sql_2'
     for formula in (('incr', ipg.fixpoint_incremental), ('A', ipg.fixpoint_A), ('B', ipg.fixpoint_B), ('C', ipg.fixpoint_C)):
         with open(FILE_BASE+'_comp_'+formula[0]+'.txt', 'w+') as out:
-            print('XDR test', file=out)
+            print('SQL test', file=out)
             print('Compressed graphs', file=out)
             print('Fixpoint Formula: ' + formula[0], file=out)
-            test_on_xdr_compressed(formula[1], out)
+            test_on_sql_compressed(formula[1], out)
         with open(FILE_BASE+'_no_comp_'+formula[0]+'.txt', 'w+') as out:
-            print('XDR test', file=out)
+            print('SQL test', file=out)
             print('Uncompressed graphs', file=out)
             print('Fixpoint Formula: ' + formula[0], file=out)
-            test_on_xdr(formula[1], out)
+            test_on_sql_uncompressed(formula[1], out)

@@ -1,0 +1,8 @@
+Personnel<->Employee
+Pno<->EmpNo
+Pname<->EmpName
+Dept<->DeptName
+Born<->Birthdate
+int<->int
+string<->varchar(50)
+date<->date
