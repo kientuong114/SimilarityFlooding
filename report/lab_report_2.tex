@@ -113,7 +113,15 @@ A partire da due grafi si computa la similitudine iniziale, descritta nel paper 
 
 Successivamente vengono creati due grafi di supporto alla computazione principale dell’algoritmo: il Pairwise Connectivity Graph (PCG) e l’Induced Propagation Graph (IPG), costruito a partire dal PCG.\\
 
-L’IPG è il grafo su cui viene computato l’algoritmo di flooding vero e proprio (chiamato nel paper Fixpoint Computation). Ogni nodo riceve il contributo di tutti i nodi ad esso adiacenti, mediante una funzione (Fixpoint Formula). Quando la similitudine per ciascun nodo è stata computata, ogni valore è normalizzato rispetto al massimo valore di similitudine presente nel grafo. Ciò fa in modo che i nodi in assoluto più simili possiedano una similitudine di 1.\\
+Il Pairwise Connectivity Graph è un grafo che possiede come nodi una coppia $(x,y)$ con $x\in E_{G_1}$ e $y\in E_{G_2}$ (Cioè $x$ è un nodo di $G_1$ e $y$ è un nodo di $G_2$ e per cui vale che $((x,y), p, (x', y')) \in E_{IPG} \Leftrightarrow (x, p, x') \in E_{G_1} \wedge (y, p, y') \in E_{G_2}$, in altre parole due nodi dell'IPG sono collegati tra loro da un arco con label $p$ se e solo se le coppie di nodi coinvolte $(x, x')$ e $(y, y')$ appartengono rispettivamente a $G_1$ e $G_2$ e sono tra di loro connesse da un arco con label $p$.\\
+
+Per un'esempio grafico si veda l'immagine ...
+
+Da questo PCG viene generato l'Induced Propagation Graph, come il grafo che possiede tutti gli stessi nodi del PCG e che, per ciascuna coppia di nodi del PCG collegata da un arco, presenta una coppia di archi, uno per ciascuna direzione, a cui è associato un determinato valore, che rappresenta il coefficiente di propagazione da un nodo all'altro.\\
+
+Tale coefficiente di propagazione uscente da ciascun nodo dell'IPG è calcolato come il reciproco del numero di archi uscenti dal corrispondente nodo del PCG che condividono lo stesso label. In pratica, se un nodo del PCG possiede 4 archi (uscenti o entranti) con un certo label $p$, allora il suo contributo nell'IPG ai nodi adiacenti sarà pari a $1/4$.\\
+
+L’IPG è il grafo su cui viene computato l’algoritmo di flooding vero e proprio (chiamato nel paper Fixpoint Computation). Ogni nodo riceve il contributo di tutti i nodi ad esso adiacenti, mediante una funzione (Fixpoint Formula) che dipende dai coefficienti di propagazione associata agli archi entranti nel nodo. Quando la similitudine per ciascun nodo è stata computata, ogni valore è normalizzato rispetto al massimo valore di similitudine presente nel grafo. Ciò fa in modo che i nodi in assoluto più simili possiedano una similitudine di 1.\\
 
 L’algoritmo viene iterato sull’IPG fino a quando non si arriva ad una condizione di terminazione, che può essere la stabilità dell’algoritmo entro una certa variazione epsilon tra un passo ed il successivo (configurabile), oppure un numero fissato di passi.\\
 
