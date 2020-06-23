@@ -2,10 +2,10 @@ from fuzzywuzzy import fuzz
 
 
 def generate(G1, G2):
-    """This method generates the bare similarity values (initial_map) for all the nodes combination of the
+    """This method generates the bare similarity values (initialmap) for all the nodes combination of the
     two input graphs
 
-    It is used to calculate the initial SF values of each node, from which then iterate through the algorithm
+    It is used to calculate the initial sf values of each node, from which then iterate through the algorithm
 
     The initial similarity values can range from 0 (minimum) to 1 (maximum)
 
@@ -18,7 +18,7 @@ def generate(G1, G2):
         G2: second input graph
 
     Returns:
-        IM: initial_map
+        IM: initialmap
     """
 
     IM = {}

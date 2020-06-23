@@ -1,10 +1,7 @@
-import pairwise_connectivity_graph as pcg
-import schema_graph_utils as sgu
-from xml_parser import schema_tree2Graph, parse_xml
-from sql_parser import parse_sql
+from sf import pairwise_connectivity_graph as pcg
+from parse.xml_parser import schema_tree2Graph, parse_xml
 from collections import defaultdict
-from functools import partial
-import initial_map as im
+from initialmap import initial_map as im
 import networkx as nx
 from math import sqrt
 
@@ -261,7 +258,7 @@ def fixpoint_C(node, ipg, norm_factor=None):
         return node_data['init_sim'] + node_data['curr_sim'] + increment
 
 
-def flooding_step(ipg, fixpoint_formula, epsilon=0.0000000000000000000000000000000000002):
+def flooding_step(ipg, fixpoint_formula, epsilon=0.000000000000002):
     """This method is used to execute a single step of the flooding algorithm.
 
     This method computes, for each node, the new similarity by using fixpoint_formula and assigns the new

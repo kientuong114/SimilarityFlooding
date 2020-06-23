@@ -1,8 +1,6 @@
 import xml.etree.ElementTree as et
-from collections import namedtuple
-import itertools
-import schema_graph_utils as sgu
-from STNode import *
+from utils import schema_graph_utils as sgu
+from parse.STNode import *
 
 FilePath = str
 blacklist = ('minOccurs', 'maxOccurs')

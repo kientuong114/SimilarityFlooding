@@ -1,7 +1,6 @@
-from typing import List, Optional
 import xml.etree.ElementTree as et
-import schema_graph_utils as sgu
-from STNode import *
+from utils import schema_graph_utils as sgu
+from parse.STNode import *
 
 FilePath = str
 

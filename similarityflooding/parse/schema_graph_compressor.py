@@ -1,5 +1,6 @@
 import networkx as nx
-import schema_graph_utils as sgu
+from utils import schema_graph_utils as sgu
+
 
 def compress_graph(graph):
     """Removes the OIDs from the graph and makes all node identifiable by their names
@@ -25,7 +26,7 @@ def compress_graph(graph):
 
 if __name__ == "__main__":
     #from xml_parser import parse_xml, schema_tree2Graph
-    from xdr_parser import parse_xdr, schema_tree2Graph
+    from parse.xdr_parser import parse_xdr, schema_tree2Graph
     #from sql_parser import parse_sql, sql_ddl2Graph
     #G = sql_ddl2Graph(parse_sql('./test/test_schemas/test_schema_from_paper1.sql'))
     G = schema_tree2Graph(parse_xdr('./test/test_schemas/CIDXPOSCHEMA.xdr'))

@@ -1,5 +1,6 @@
 import re
-import schema_graph_utils as sgu
+from utils import schema_graph_utils as sgu
+
 
 def parse_sql(path):
     """Clears and returns the sql input file for sql_ddl2Graph to process
@@ -100,7 +101,7 @@ def sql_ddl2Graph(data):
     return G
 
 def main():
-    #import initial_map as im
+    #import initialmap as im
     #import pairwise_connectivity_graph as pcg
 
     file_path = "test_schemas/test_schema_from_paper1.sql"

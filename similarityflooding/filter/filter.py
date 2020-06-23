@@ -1,7 +1,7 @@
-from sql_parser import sql_ddl2Graph
-from sql_parser import parse_sql
-import induced_propagation_graph as ipg
-import schema_graph_utils as sgu
+from parse.sql_parser import sql_ddl2Graph
+from parse.sql_parser import parse_sql
+from sf import induced_propagation_graph as ipg
+from utils import schema_graph_utils as sgu
 import networkx as nx
 import sys
 
@@ -20,11 +20,11 @@ def select_filter(SF, option="marriage", verbose=True):
         return filter_stable_marriage(SF, verbose)
 
 
-# filter_schema contains a dict of OIDs connection as tuples and their SF values
+# filter_schema contains a dict of OIDs connection as tuples and their sf values
 def clear_sf(SF, min_sim=0.001):
-    """This method is used to extract a reduced data structure of SF to use in the filter
+    """This method is used to extract a reduced data structure of sf to use in the filter
 
-    filtered_schema is a dict which has as keys tuples of OIDs, and as value their SF value
+    filtered_schema is a dict which has as keys tuples of OIDs, and as value their sf value
 
     """
 
@@ -38,9 +38,9 @@ def clear_sf(SF, min_sim=0.001):
 
 
 def clear_sf_compressed(SF, min_sim=0.00000000000001):
-    """This method is used to extract a reduced data structure of SF to use in the filter
+    """This method is used to extract a reduced data structure of sf to use in the filter
 
-    filtered_schema is a dict which has as keys tuples of OIDs, and as value their SF value
+    filtered_schema is a dict which has as keys tuples of OIDs, and as value their sf value
 
     """
 
@@ -60,11 +60,11 @@ def init_engagements_schemas(SF, schema1_engagements, schema2_engagements):
     schema1_engagement keeps track of the possible pair the element from the first graph may be pair with, and
     schema2_engagement keeps track of the elements it has paired with
 
-    schema1_engagement has as keys the nodes in SF associated with the first graph, and as value a list made of:
+    schema1_engagement has as keys the nodes in sf associated with the first graph, and as value a list made of:
         [0]: None (where the current engagement element will be stored)
         [1]: tuples of sf value and the corresponding element in the second graph
 
-    schema2_engagement has as keys the nodes in SF associated with the second graph, and as value the element to it
+    schema2_engagement has as keys the nodes in sf associated with the second graph, and as value the element to it
     is "engaged" with (initialized as None)
 
     Args:

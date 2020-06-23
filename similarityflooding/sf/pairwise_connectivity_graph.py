@@ -7,7 +7,7 @@ def generate(G1, G2):
     The pairwise connectivity graph is defined in the paper as follows: ((x; y); p; (x0 ; y0)) ∈ PCG(A; B) <=>
     (x; p; x0) ∈ A and (y; p; y0) ∈ B. Each node from A which has an outer edge p is combined with other node
     from B with outer edge p, and they point to other combination of nodes A and B that have an incoming edge p.
-    It is used to generate the induced propagation graph, which is then used to calculate the SF of the nodes
+    It is used to generate the induced propagation graph, which is then used to calculate the sf of the nodes
 
     Args:
         G1: first input graph
