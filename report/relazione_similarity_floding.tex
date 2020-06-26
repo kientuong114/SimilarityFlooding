@@ -74,7 +74,7 @@ Referenti: & Prof. Letizia Tanca\\ % Partner names
 
 \section{Introduzione}
 
-Da decenni il problema di integrare dati provenienti da fonti differenti e con formati differenti è stato centro dell’attenzione di molte pubblicazioni scientifiche. La necessità di ottenere una visione di insieme a partire da schemi eterogenei è essenzialmente guidata dal bisogno che ricercatori e aziende hanno raggruppare una vasta quantità di dati, al fine di utilizzare quest’ultimi in ambito accademico o commerciale. Questo ambito è comunemente indicato con il termine “Data Integration”.\\
+Da decenni il problema di integrare dati provenienti da fonti differenti e con formati differenti è stato centro dell’attenzione di molte pubblicazioni scientifiche. La necessità di ottenere una visione di insieme a partire da schemi eterogenei è essenzialmente guidata dal bisogno che ricercatori e aziende hanno nel raggruppare una vasta quantità di dati, al fine di utilizzare quest’ultimi in ambito accademico o commerciale. Questo ambito è comunemente indicato con il termine “Data Integration”.\\
 
 In particolare, il processo di unificare gli schemi di due database è chiamato “Schema Matching”. Più formalmente lo schema matching consiste nel trovare quali oggetti, provenienti da schemi differenti, sono correlati semanticamente.\\
 
@@ -102,8 +102,9 @@ L’implementazione finale può essere trovata sulla repository di Github:\\
 %----------------------------------------------------------------------------------------
 
 \section{Descrizione dell'Algoritmo}
+\label{descript_alg}
 
-L’algoritmo, nella sua forma più astratta, si basa su un principio di similitudine topografica tra grafi. L’intuizione è che se è noto che un nodo di un grafo ed un nodo di un altro grafo sono simili tra di loro (per una qualche definizione di similitudine) allora si può propagare la similarità ai loro nodi adiacenti.\\
+L’algoritmo, nella sua forma più astratta, si basa su un principio di similitudine topografica tra grafi. L’intuizione è la seguente: se è noto che un nodo di un grafo ed un nodo di un altro grafo sono simili tra di loro (per una qualche definizione di similitudine) allora si può propagare la similarità ai loro nodi adiacenti.\\
 Più formalmente, siano $G_1 = (V_1, E_1)$ e $G2 = (V_2, E_2) $ due grafi e sia \\ $S: V1\times V2 \to [0, 1]$ una funzione di similitudine: l’idea è quella di generare un unico grafo a partire da G1 e G2 in cui ogni nodo rappresenta la similitudine tra una coppia di nodi, uno appartenente a G1 e l’altro appartenente a G2.\\
 
 Si va poi a fissare una similitudine iniziale $S_0$ applicando $S$ su ogni coppia di nodi e iterativamente sfruttare la similitudine iniziale di ogni nodo per computare le nuove similitudini dei nodi adiacenti $S_1$, mediante una funzione delta di propagazione. Questo processo viene iterato fino ad una certa condizione di terminazione.\\
@@ -116,7 +117,7 @@ A partire da due grafi si computa la similitudine iniziale, descritta nel paper 
 
 Successivamente vengono creati due grafi di supporto alla computazione principale dell’algoritmo: il Pairwise Connectivity Graph (PCG) e l’Induced Propagation Graph (IPG), costruito a partire dal PCG.\\
 
-Il Pairwise Connectivity Graph è un grafo che possiede come nodi una coppia $(x,y)$ con $x\in E_{G_1}$ e $y\in E_{G_2}$ (Cioè $x$ è un nodo di $G_1$ e $y$ è un nodo di $G_2$ e per cui vale che $((x,y), p, (x', y')) \in E_{IPG} \Leftrightarrow (x, p, x') \in E_{G_1} \wedge (y, p, y') \in E_{G_2}$, in altre parole due nodi dell'IPG sono collegati tra loro da un arco con label $p$ se e solo se le coppie di nodi coinvolte $(x, x')$ e $(y, y')$ appartengono rispettivamente a $G_1$ e $G_2$ e sono tra di loro connesse da un arco con label $p$.\\
+Il Pairwise Connectivity Graph è un grafo che possiede come nodi coppie del tipo $(x,y)$ con $x\in E_{G_1}$ e $y\in E_{G_2}$ (Cioè $x$ è un nodo di $G_1$ e $y$ è un nodo di $G_2$) e per cui vale che $((x,y), p, (x', y')) \in E_{IPG} \Leftrightarrow (x, p, x') \in E_{G_1} \wedge (y, p, y') \in E_{G_2}$, in altre parole due nodi dell'IPG sono collegati tra loro da un arco con label $p$ se e solo se le coppie di nodi coinvolte $(x, x')$ e $(y, y')$ appartengono rispettivamente a $G_1$ e $G_2$ e sono tra di loro connesse da un arco con label $p$.\\
 
 \begin{figure}
 \includegraphics[scale=0.4]{sf.png}
@@ -126,9 +127,9 @@ Il Pairwise Connectivity Graph è un grafo che possiede come nodi una coppia $(x
 
 Per un'esempio grafico si veda l'immagine \ref{sf1}.\\
 
-Da questo PCG viene generato l'Induced Propagation Graph, come il grafo che possiede tutti gli stessi nodi del PCG e che, per ciascuna coppia di nodi del PCG collegata da un arco, presenta una coppia di archi, uno per ciascuna direzione, a cui è associato un determinato valore, che rappresenta il coefficiente di propagazione da un nodo all'altro.\\
+Da questo PCG viene generato l'Induced Propagation Graph, cioè il grafo che possiede tutti gli stessi nodi del PCG e che, per ciascuna coppia di nodi del PCG collegata da un arco, presenta una coppia di archi, uno per ciascuna direzione, a cui è associato un determinato valore, che rappresenta il coefficiente di propagazione da un nodo all'altro, nella direzione dell'arco.\\
 
-Tale coefficiente di propagazione uscente da ciascun nodo dell'IPG è calcolato come il reciproco del numero di archi uscenti dal corrispondente nodo del PCG che condividono lo stesso label. In pratica, se un nodo del PCG possiede 4 archi (uscenti o entranti) con un certo label $p$, allora il suo contributo nell'IPG ai nodi adiacenti sarà pari a $1/4$.\\
+Tale coefficiente di propagazione uscente da ciascun nodo dell'IPG è calcolato come il reciproco del numero di archi (uscenti o entranti) dal corrispondente nodo del PCG che condividono lo stesso label. In pratica, se un nodo del PCG possiede 4 archi (uscenti o entranti) con un certo label $p$, allora il suo contributo nell'IPG ai nodi adiacenti sarà pari a $1/4$.\\
 
 L’IPG è il grafo su cui viene computato l’algoritmo di flooding vero e proprio (chiamato nel paper Fixpoint Computation). Ogni nodo riceve il contributo di tutti i nodi ad esso adiacenti, mediante una funzione (Fixpoint Formula) che dipende dai coefficienti di propagazione associata agli archi entranti nel nodo. Quando la similitudine per ciascun nodo è stata computata, ogni valore è normalizzato rispetto al massimo valore di similitudine presente nel grafo. Ciò fa in modo che i nodi in assoluto più simili possiedano una similitudine di 1.\\
 
@@ -136,7 +137,7 @@ L’algoritmo viene iterato sull’IPG fino a quando non si arriva ad una condiz
 
 Dai risultati della computazione sull’IPG si estraggono i migliori match, mediante uno stadio che il paper definisce come "filter". L'algoritmo di filter deve implementare una qualche euristica per selezionare i match migliori partendo dai risultati della fixpoint computation. L'algoritmo da noi implementato per questo step si basa sul problema conosciuto nella letteratura scientifica come il problema del matrimonio stabile (Stable marriage problem).\\
 
-Si noti che sebbene qui sia stato descritto l'algoritmo più nello specifico nell'ambito dello Schema Matching, esso è estendibile a qualsiasi applicazione rappresentabile con grafi e dai quali è possibile estrarre una certo valore di similarità tra nodi di grafi differenti. \\
+Si noti che, sebbene qui sia stato descritto l'algoritmo più nello specifico nell'ambito dello Schema Matching, esso è estendibile a qualsiasi applicazione rappresentabile con grafi e dai quali è possibile estrarre una certo valore di similarità tra nodi di grafi differenti. \\
 
 %----------------------------------------------------------------------------------------
 %	SECTION 4
@@ -144,7 +145,7 @@ Si noti che sebbene qui sia stato descritto l'algoritmo più nello specifico nel
 
 \section{Timeline del Progetto}
 
-Il primo passo effettuato è stato quello di ricercare più approfonditamente il paper fornitoci, che ha portato alla scoperta di una versione estesa del paper \cite{sfpaper_ext} e anche alla dissertazione di PhD di uno degli autori \cite{generic_model_man}.\\
+Il primo passo effettuato è stato quello di ricercare più approfonditamente il paper fornito, che ha portato alla scoperta di una versione estesa del paper \cite{sfpaper_ext} e anche alla dissertazione di PhD di uno degli autori \cite{generic_model_man}.\\
 
 La ricerca ha fornito spunti di approfondimento su alcuni passaggi trattati rapidamente nel paper, in particolare sulla trasformazione da schema di database a grafo, che è stato il primo passo nello sviluppo del progetto.
 Dopo aver sviluppato i primi parser di schemi SQL e XML si è sviluppato ogni passo dell’algoritmo separatamente ed indipendentemente.\\
@@ -160,13 +161,13 @@ Il progetto finale comprende vari parser per i formati SQL schema, XML e XDR, i 
 \section{Scelte Progettuali}
 \label{Scelte Progettuali}
 
-Il paper non pone alcuna preferenza riguardo al tipo di schema di input. Come scelta progettuale si sono sviluppati 3 moduli di parsing: uno per schemi SQL, reppresentati mediante DDL, schemi XML e XDR. La scelta è stata guidata dalla popolarità di tali schemi (SQL e XML) oppure perchè era il formato principale degli schemi di test forniti (XDR).\\
+Il paper non pone alcuna preferenza riguardo al tipo di schema di input. Come scelta progettuale si sono sviluppati 3 moduli di parsing: uno per schemi SQL, rappresentati mediante DDL, schemi XML e XDR. La scelta è stata guidata dalla popolarità di tali schemi (SQL e XML) oppure perchè era il formato principale degli schemi di test forniti (XDR).\\
 
-Una divergenza rispetto al paper, guidata da alcune intuizioni apparse durante lo sviluppo del progetto, è stata nella generazione del grafo iniziale: il paper presenta un modello che rappresenta ogni entità come un nodo caratterizzato da un nominativo univoco (della forma \&num, dove num è un numero naturale, e chiamato OID). Per indicare il nome reale di tale entità, tale nodo viene collegato ad un altro nodo rappresentante il nome, da un arco che rappresenta la relazione “nome di”. \\
+Una divergenza rispetto al paper, guidata da alcune intuizioni apparse durante lo sviluppo del progetto, è stata nella generazione del grafo iniziale: il paper presenta un modello che rappresenta ogni entità come un nodo caratterizzato da un nominativo univoco detto OID (della forma "\&num", dove num è un numero naturale). Per indicare il nome reale di tale entità, tale nodo viene collegato ad un altro nodo rappresentante il nome, da un arco che rappresenta la relazione “nome di”. \\
 
-È stato osservato che questo dettaglio va ad influenzare fortemente i risultati dell’algoritmo. La motivazione si può intuire mediante il fatto che la similitudine iniziale data dall’Initial Mapping è una proprietà del contenuto del nodo (si noti che a questo fine gli OID non erano considerati, in quanto altrimenti ogni OID sarebbe risultato molto simile ad ogni altro OID) mentre il resto dell’algoritmo si basa su proprietà strutturali del grafo. Questo fa in modo che la similitudine iniziale tra due nodi, in alcuni casi anche molto alta, venisse “dispersa” in quanto i nodi con i nomi non erano collegati direttamente al resto del grafo, ma solamente mediante i nodi di OID.\\
+È stato osservato che questo dettaglio va ad influenzare fortemente i risultati dell’algoritmo. La motivazione è intuibile mediante il fatto che la similitudine iniziale data dall’Initial Mapping è una proprietà del contenuto del nodo (si noti che a questo fine gli OID non erano considerati, in quanto altrimenti ogni OID sarebbe risultato molto simile ad ogni altro OID) mentre il resto dell’algoritmo si basa su proprietà strutturali del grafo. Questo fa in modo che la similitudine iniziale tra due nodi, in alcuni casi anche molto alta, venisse “dispersa” in quanto i nodi con i nomi non erano collegati direttamente al resto del grafo, ma solamente mediante i nodi di OID.\\
 
-La mancanza di queste considerazioni nelle documentazioni originali e l'assenza degli OID nella maggior parte delle rappresentazioni dei grafi ci ha portato a sviluppare entrambe le soluzioni, offrendo entrambe le opzione alla generazione del grafo: a partire da un grafo con gli OID si può effettuare l’algoritmo direttamente su tale grafo, oppure effettuare un’ulteriore trasformazione di compressione sul grafo, in modo da rimuovere gli OID. Un confronto tra i risultati su grafi compressi e non è presente nella sezione 7 di questo report.\\
+La mancanza di queste considerazioni nelle documentazioni originali e l'assenza degli OID nella maggior parte delle rappresentazioni dei grafi ci ha portato a sviluppare entrambe le soluzioni, offrendo entrambe le opzioni alla generazione del grafo: a partire da un grafo con gli OID si può effettuare l’algoritmo direttamente su tale grafo, oppure si può effettuare un’ulteriore trasformazione di compressione sul grafo, in modo da rimuovere gli OID. Un confronto tra i risultati su grafi compressi e non compressi è presente nella sezione 7 di questo report.\\
 
 Infine, nel contesto del paper sono state presentate varie alternative riguardo alla scelta della Fixpoint Formula. Per testare tutte le varie possibilità si è scelto di implementare tutte e 4 le formule presentate in \citep{sfpaper_ext}, lasciando la possibilità di cambiare la funzione da utilizzare.
 
@@ -181,7 +182,7 @@ Il progetto è composto da 4 moduli principali, organizzati in diverse sottocart
 \begin{enumerate}
 	\item \textbf{parse}: contiene parser SQL DDL, XDR e XML usati per testare l'algoritmo e sono esempio di conversione da file a grafo NetworkX
 	\item \textbf{initialmap}: contiene un algoritmo di attraversamento dei nodi dei due grafi per generare l'initialMap dei due, ossia il valore di similitudine al quale vengono inizializzati i nodi corrispondenti
-	\item \textbf{sf}: contiene l'algoritmo di generazione del PCG e dell'IPG (spiegati nel paragrafo 3), la loro inizializzazione, e l'algoritmo di Similarity Flooding, con le 4 formule Fixpoint presentate nel paper originali. 
+	\item \textbf{sf}: contiene l'algoritmo di generazione del PCG e dell'IPG (spiegati nel paragrafo \ref{descript_alg}), la loro inizializzazione, e l'algoritmo di Similarity Flooding, con le 4 formule Fixpoint presentate nel paper originali. 
 	\item \textbf{filter}: contiene un filtro del risultato ottenuto dal Similarity Flooding basato sull'algoritmo di Stable Marriage.
 \end{enumerate}
 Questi permettono di poter eseguire l'intero processo di schema matching, e sono sufficientemente documentati e robusti da permettere la facile integrazione con altri progetti. L'utilizzo di Python e NetworkX, in particolare, facilitano questo processo, essendo il primo un linguaggio molto usato in Data Science, ed essendo il secondo una libreria molto usata per la generazione e studio di grafi su Python.\\
@@ -345,7 +346,7 @@ A seguito due tabelle riassuntive dei risultati ottenuti al variare della Fixpoi
 \end{tikzpicture}
 \end{center}
 
-Si può osservare come tendenzialmente come la formula A dia dei risultati migliori in generale, probabilmente dati dall'ampio numero di veri negativi (cioè casi in cui l'algoritmo ha determinato correttamente l'assenza di un corrispettivo nell'altro grafo). Nonostante tale numero possa risultare meno utile del numero di veri positivi, i risultati possono essere comunque usati per sfoltire il numero di campi su cui effettuare matching manuale. Questo dato è particolarmente accentuato in questo test case, dove uno degli schemi è significativamente più piccolo dell'altro (80 linee di CIDXPOSCHEMA.xdr contro 335 linee di Apertum.xdr).\\
+Si può osservare come, tendenzialmente, la formula A dia dei risultati migliori in generale, probabilmente dati dall'ampio numero di veri negativi (cioè casi in cui l'algoritmo ha determinato correttamente l'assenza di un corrispettivo nell'altro grafo). Nonostante tale numero possa risultare meno utile del numero di veri positivi, i risultati possono essere comunque usati per sfoltire il numero di campi su cui effettuare matching manuale. Questo dato è particolarmente accentuato in questo test case, dove uno degli schemi è significativamente più piccolo dell'altro (80 linee di CIDXPOSCHEMA.xdr contro 335 linee di Apertum.xdr).\\
 
 Si veda la tabella \ref{results1} per le similitudini selezionate dall’algoritmo nel caso migliore, cioè grafo non compresso e fixpoint formula A.
 
@@ -445,7 +446,7 @@ PO.POLines.Item.line & Order.POLine.LineNo &                            True Pos
 
 Si può notare come per alcuni nodi, principalmente quelli alla radice si ha una similitudine molto alta (pari a 1, il massimo raggiungibile) e per alcuni nodi si ottengono delle similitudini che riflettono correttamente i risultati attesi.\\
 
-\subsection{Test Case 2: SQL DDL from original paper}
+\subsection{Test Case 2: SQL DDL dal paper}
 
 
 Il seguente test case è preso dal paper originale.\\
@@ -536,7 +537,7 @@ In seguito la rappresentazione grafica dell'accuracy dei valori.
 
 È interessante notare come, nonostante le ipotesi iniziali sugli OID (vedi \ref{Scelte Progettuali}), in realtà per quanto riguarda gli schemi XDR si osserva una diminuzione di performance, contraria a quanto atteso. Negli schemi SQL si osserva, invece, sempre una diminuzione di performance per le formule incremental, B e C e un netto miglioramento per la formula A.\\
 
-Alcune ipotesi che si possono fare per questo fenomeno è la grandezza degli schemi, dove gli schemi .xdr erano di grandezza molto maggiore rispetto agli schemi SQL.\\
+Alcune ipotesi che si possono fare per questo fenomeno è la grandezza degli schemi, dove gli schemi XDR sono di grandezza molto maggiore rispetto agli schemi SQL.\\
 
 Si ritiene che una sperimentazione molto più approfondita sia necessaria per trovare una correlazione sufficiente a costruire delle linee guida su quali parametri usare in funzione della grandezza dello schema.
 
@@ -568,7 +569,7 @@ def test_on_sql_uncompressed(formula, outfile):
     pairs = f.select_filter(sf)
     f.print_pairs(pairs, outfile)
 \end{verbatim}
-Da questo snippet di codice possiamo notare che la scelta della fixpoint formula può essere presa dal più alto di livello del progetto, come anche il tipo di filtro e il tipo di grafi di input.\\
+Da questo snippet di codice possiamo notare che la scelta della fixpoint formula può essere presa dal livello più alto del progetto, come anche il tipo di filtro e il tipo di grafi di input.\\
 
 \textbf{Implementazione Fixpoint A}
 \begin{verbatim}
