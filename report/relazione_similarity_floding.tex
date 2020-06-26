@@ -199,13 +199,29 @@ Riportiamo alcuni risultati ottenuti mediante il matching di alcuni schemi forni
 
 Per i test si userà la seguente terminologia:
 \begin{enumerate}
-	\item \textbf{True Positive}: L'algoritmo ha determinato che un elemento ha un match ed effettivamente possiede quel match.
-	\item \textbf{True Negative}: L'algoritmo ha determinato che un elemento non ha un match ed effettivamente non possiede match.
-	\item \textbf{False Positive}: L'algoritmo ha determinato che un elemento ha un match ma in realtà questo non è esistente
-	\item \textbf{False Negative}: L'algoritmo ha determinato che un elemento non ha un match ma in realtà questo è esistente.
+	\item \textbf{True Positive} (TP): L'algoritmo ha determinato che un elemento ha un match ed effettivamente possiede quel match.
+	\item \textbf{True Negative} (TN): L'algoritmo ha determinato che un elemento non ha un match ed effettivamente non possiede match.
+	\item \textbf{False Positive} (FP): L'algoritmo ha determinato che un elemento ha un match ma in realtà questo non è esistente
+	\item \textbf{False Negative} (FN): L'algoritmo ha determinato che un elemento non ha un match ma in realtà questo è esistente.
 \end{enumerate}
 
 Inoltre si distinguono i casi in cui il grafo è stato compresso (Compressed), cioè i suoi OID sono stati sostituiti dal nome vero dell'oggetto (si veda la sezione \ref{Scelte Progettuali}), oppure in cui il grafo non è stato compresso (Non Compressed).
+
+I test case sono stati verificati automaticamente da un verificatore scritto in Python, che può essere analizzato nella cartella:\\
+
+\texttt{similarityflooding/test/results/verifier.py}\\
+
+Il verificatore calcola i punteggi seguendo la tipica definizione di Accuracy, Precision e Recall:
+
+\[
+	\begin{array}{lcc}
+		\text{Accuracy} &= &\dfrac{TP+TN}{TP+FP+TN+FN}\\[\bigskipamount]
+		
+		\text{Precision} &= &\dfrac{TP}{TP+FP}\\[\bigskipamount]
+		
+		\text{Recall} &= &\dfrac{TP}{TP+FN}
+	\end{array}
+\]
 
 \newpage
 
