@@ -19,7 +19,7 @@
 %	PACKAGES AND DOCUMENT CONFIGURATIONS
 %----------------------------------------------------------------------------------------
 
-\documentclass{article}
+\documentclass[a4paper,10pt]{article}
 
 \usepackage{graphicx} % Required for the inclusion of images
 \usepackage{natbib} % Required to change bibliography style to APA
@@ -29,6 +29,9 @@
 \usepackage[T1]{fontenc} % Accented letters
 \usepackage{hhline}
 \usepackage{pgfplots}
+\usepackage{tabularx}
+\usepackage[italian]{babel}
+\usepackage[title]{appendix}
 \pgfplotsset{width=7cm,compat=1.8}
 
 \setlength\parindent{0pt} % Removes all indentation from paragraphs
@@ -40,7 +43,7 @@
 %----------------------------------------------------------------------------------------
 
 \title{Schema Matching con Algoritmo di Similarity Flooding \\ Progetto di Ingegneria Informatica 2019/2020\\
-\large (Draft version 1)} % Title
+\large (Draft version 2)} % Title
 
 \author{Stefan \textsc{Djokovic} \\
 	\texttt{stefan.djokovic@mail.polimi.it}
@@ -115,7 +118,13 @@ Successivamente vengono creati due grafi di supporto alla computazione principal
 
 Il Pairwise Connectivity Graph è un grafo che possiede come nodi una coppia $(x,y)$ con $x\in E_{G_1}$ e $y\in E_{G_2}$ (Cioè $x$ è un nodo di $G_1$ e $y$ è un nodo di $G_2$ e per cui vale che $((x,y), p, (x', y')) \in E_{IPG} \Leftrightarrow (x, p, x') \in E_{G_1} \wedge (y, p, y') \in E_{G_2}$, in altre parole due nodi dell'IPG sono collegati tra loro da un arco con label $p$ se e solo se le coppie di nodi coinvolte $(x, x')$ e $(y, y')$ appartengono rispettivamente a $G_1$ e $G_2$ e sono tra di loro connesse da un arco con label $p$.\\
 
-Per un'esempio grafico si veda l'immagine ...
+\begin{figure}
+\includegraphics[scale=0.4]{sf.png}
+\caption{Esempio di aplicazione dell'algoritmo su un semplice grafo}
+\label{sf1}
+\end{figure}
+
+Per un'esempio grafico si veda l'immagine \ref{sf1}.\\
 
 Da questo PCG viene generato l'Induced Propagation Graph, come il grafo che possiede tutti gli stessi nodi del PCG e che, per ciascuna coppia di nodi del PCG collegata da un arco, presenta una coppia di archi, uno per ciascuna direzione, a cui è associato un determinato valore, che rappresenta il coefficiente di propagazione da un nodo all'altro.\\
 
@@ -129,7 +138,7 @@ Dai risultati della computazione sull’IPG si estraggono i migliori match, medi
 
 Si noti che sebbene qui sia stato descritto l'algoritmo più nello specifico nell'ambito dello Schema Matching, esso è estendibile a qualsiasi applicazione rappresentabile con grafi e dai quali è possibile estrarre una certo valore di similarità tra nodi di grafi differenti. \\
 
-%-------------------------------------------------\end{axis}---------------------------------------
+%----------------------------------------------------------------------------------------
 %	SECTION 4
 %----------------------------------------------------------------------------------------
 
@@ -166,9 +175,9 @@ Infine, nel contesto del paper sono state presentate varie alternative riguardo 
 %	SECTION 6
 %----------------------------------------------------------------------------------------
 
-\section{Componenti del progetto}
+\section{Moduli del progetto}
 
-Il progetto è composto da 4 componenti principali, organizzati in diverse sottocartelle pubblicate sulla repository su GitHub per permettere la facile modifica dei singoli:
+Il progetto è composto da 4 moduli principali, organizzati in diverse sottocartelle pubblicate sulla repository su GitHub per permettere la facile modifica dei singoli:
 \begin{enumerate}
 	\item \textbf{parse}: contiene parser SQL DDL, XDR e XML usati per testare l'algoritmo e sono esempio di conversione da file a grafo NetworkX
 	\item \textbf{initialmap}: contiene un algoritmo di attraversamento dei nodi dei due grafi per generare l'initialMap dei due, ossia il valore di similitudine al quale vengono inizializzati i nodi corrispondenti
@@ -196,6 +205,8 @@ Per i test si userà la seguente terminologia:
 \end{enumerate}
 
 Inoltre si distinguono i casi in cui il grafo è stato compresso (Compressed), cioè i suoi OID sono stati sostituiti dal nome vero dell'oggetto (si veda la sezione \ref{Scelte Progettuali}), oppure in cui il grafo non è stato compresso (Non Compressed).
+
+\newpage
 
 \subsection{Test Case 1: Apertum + CIDXPOSCHEMA (XDR)}
 
@@ -336,9 +347,10 @@ A seguito due tabelle riassuntive dei risultati ottenuti al variare della Fixpoi
 
 Si può osservare come tendenzialmente come la formula A dia dei risultati migliori in generale, probabilmente dati dall'ampio numero di veri negativi (cioè casi in cui l'algoritmo ha determinato correttamente l'assenza di un corrispettivo nell'altro grafo). Nonostante tale numero possa risultare meno utile del numero di veri positivi, i risultati possono essere comunque usati per sfoltire il numero di campi su cui effettuare matching manuale. Questo dato è particolarmente accentuato in questo test case, dove uno degli schemi è significativamente più piccolo dell'altro (80 linee di CIDXPOSCHEMA.xdr contro 335 linee di Apertum.xdr).\\
 
-A seguito riportiamo una tabella con le similitudini selezionate dall’algoritmo nel caso migliore, cioè grafo non compresso e fixpoint formula A.
+Si veda la tabella \ref{results1} per le similitudini selezionate dall’algoritmo nel caso migliore, cioè grafo non compresso e fixpoint formula A.
 
-\begin{center}
+\begin{table}
+\noindent\makebox[\textwidth]{%
 \begin{tabular}{| c | c | c |}
 	\hline
 	\textbf{Apertum} & \textbf{CIDXPOSCHEMA} & \textbf{Risultato}\\
@@ -424,7 +436,10 @@ PO.POLines.Item.partNo & Order.POLine.Quantity.PackCode &               False Po
 PO.POLines.Item.line & Order.POLine.LineNo &                            True Positive\\
 \hline
 \end{tabular}
-\end{center}
+}
+\caption{Risultati dell'applicazione dell'algoritmo sul test case 1}
+\label{results1}
+\end{table}
 
 \newpage
 
@@ -517,6 +532,14 @@ In seguito la rappresentazione grafica dell'accuracy dei valori.
 \end{tikzpicture}
 \end{center}
 
+\subsection{Commento sui Risultati Sperimentali}
+
+È interessante notare come, nonostante le ipotesi iniziali sugli OID (vedi \ref{Scelte Progettuali}), in realtà per quanto riguarda gli schemi XDR si osserva una diminuzione di performance, contraria a quanto atteso. Negli schemi SQL si osserva, invece, sempre una diminuzione di performance per le formule incremental, B e C e un netto miglioramento per la formula A.\\
+
+Alcune ipotesi che si possono fare per questo fenomeno è la grandezza degli schemi, dove gli schemi .xdr erano di grandezza molto maggiore rispetto agli schemi SQL.\\
+
+Si ritiene che una sperimentazione molto più approfondita sia necessaria per trovare una correlazione sufficiente a costruire delle linee guida su quali parametri usare in funzione della grandezza dello schema.
+
 \section{Conclusioni}
 
 L’algoritmo produce dei risultati soddisfacenti nell’ambito dello schema matching. I test effettuati mostrano dei risultati che migliorano le performance nello schema matching quando messi in sinergia con il giudizio di un operatore umano.\\
@@ -529,8 +552,9 @@ Il framework è facilmente estendibile a questi ambiti, grazie alla separazione 
 
 Nel contesto del progetto, si è ritenuta di centrale importanza la libertà di scelta sui parametri dell’algoritmo. In molti punti chiave dell’implementazione presentata è possibile configurare la strategia da utilizzare, come già descritto nella sezione \ref{Scelte Progettuali}.\\
 
-
-\section*{Appendix A}
+\newpage
+\begin{appendices}
+\section{Esempi di codice}
 
 In seguito sono presentati alcuni esempi del codice di implementazione. Il progetto con codice documentato può essere trovato sulla repository \url{https://github.com/kientuong114/SimilarityFlooding}\\
 
@@ -562,14 +586,15 @@ def fixpoint_A(node, ipg, norm_factor=None):
 
 Fixpoint A è la Fixpoint formula che nei test si è rilevata più precisa. Grazie a NetworkX la scrittura risulta molto breve e efficace.
 
+\end{appendices}
 
 %----------------------------------------------------------------------------------------
 %	BIBLIOGRAPHY
 %----------------------------------------------------------------------------------------
 
 \bibliographystyle{abbrv}
-
-\bibliography{sample}
+\newpage
+\bibliography{bibliography}
 
 %----------------------------------------------------------------------------------------
 
