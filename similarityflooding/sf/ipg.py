@@ -115,7 +115,7 @@ def inverse_product(nodeA, nodeB, sfg):
     return label_coeffs
 
 
-def generate(sfg, default_sim=0.00001, prop_func=fast_inverse_product):
+def generate(sfg, default_sim=0.0001, prop_func=fast_inverse_product):
     """This method generates the Induced Propagation Graph from the Pairwise Connectivity Graph
 
     An Induced Propagation Graph has the same nodes of the PCG but, for each edge, it instead has
@@ -269,7 +269,8 @@ def flooding_step(ipg, fixpoint_formula, epsilon=0.000000000000002):
     If the square root of the sum of squares of all the similarity differences (between the new one and the old one)
     is greater than epsilon, then this method returns False, otherwise it returns True.
 
-    In other words, if the euclidean norm of the similarity difference vector is less than epsilon, the computation is to be stopped.
+    In other words, if the euclidean norm of the similarity difference vector is less than epsilon, the computation is
+    to be stopped.
 
     Args:
         ipg: the Induced Propagation Graph
@@ -298,19 +299,21 @@ def flooding_step(ipg, fixpoint_formula, epsilon=0.000000000000002):
     return True
 
 
-def similarityFlooding(sf, max_steps=1000, verbose=False, fixpoint_formula=fixpoint_incremental, tqdm=False):
-    """This method executes the similarity flooding algorithm, given SFGraphs instance containing at least the starting Graphs.
+def similarity_flooding(sf, max_steps=1000, verbose=False, fixpoint_formula=fixpoint_incremental, tqdm=False):
+    """This method executes the similarity flooding algorithm, given SFGraphs instance containing at least the
+    starting Graphs.
 
-    This method generates the Pairwise Connectivity Graph and the Induced Propagation Graph, if not already present in sf.
+    This method generates the Pairwise Connectivity Graph and the Induced Propagation Graph, if not present in sf.
     It then computes at most max_steps of the flooding algorithm by calling flooding_step.
-    The algorithm stop either if max_steps have been executed, or if flooding_step returned false, meaning that the precision bound
-    has been reached.
+    The algorithm stop either if max_steps have been executed, or if flooding_step returned false, meaning that
+    the precision bound has been reached.
 
     Args:
         sf: the SFGraphs instance which contains at least the starting Graphs
         max_steps: the maximum number of steps for which to execute the algorithm
         verbose: if True, debug messages will be printed
-        fixpoint_formula: a function taking a node and an Induced Propagation Graph and returns the new similarity value for that node
+        fixpoint_formula: a function taking a node and an Induced Propagation Graph and returns the new similarity
+        value for that node
     """
 
     if not sf.PCG:

@@ -3,10 +3,11 @@ from typing import Generator, Dict, Optional, List, KeysView
 
 PathNode = namedtuple('PathNode', ['tag', 'attrib'])
 
+
 class STNode:
     """Schema Tree Node
 
-    A Schema Tree is a n-ary tree which represents a hierachical data set.
+    A Schema Tree is a n-ary tree which represents a hierarchical data set.
     A Schema Tree should be created only via the parsing functions (e.g. parse_xml())
     Note that since Python 3.7 dicts are now ordered by default.
     This means that attrib will have the same order of the input file.
@@ -18,7 +19,7 @@ class STNode:
         father: Reference to the father of tha node
     """
 
-    def __init__(self, tag: str, attrib: Dict[str,str] = None) -> None:
+    def __init__(self, tag: str, attrib: Dict[str, str] = None) -> None:
         self.tag: str = tag
         if not attrib:
             self.attrib: Dict[str, str] = {}
@@ -28,10 +29,10 @@ class STNode:
         self.father: Optional['STNode'] = None
 
     def __repr__(self):
-        s = f"""STNode(tag = {self.tag}, """ +\
-                    f"""attrib = {list(self.attrib)}, """ +\
-                    f"""children = {[tag for tag in self.children.keys()]}, """ +\
-                    f"""father = {self.father.tag if self.father else None})"""
+        s = f"""STNode(tag = {self.tag}, """ + \
+            f"""attrib = {list(self.attrib)}, """ + \
+            f"""children = {[tag for tag in self.children.keys()]}, """ + \
+            f"""father = {self.father.tag if self.father else None})"""
         return s
 
     def add_child(self: 'STNode', child: 'STNode') -> None:
@@ -79,6 +80,7 @@ def merge_path_nodes(node1: STNode, node2: STNode) -> STNode:
 
     return node1
 
+
 def print_tree(root: STNode) -> None:
     """Print all nodes of the Schema Tree in pre-order
 
@@ -100,6 +102,7 @@ def post_order_walk(root: STNode) -> Generator[STNode, None, None]:
     for tag, child in root.children.items():
         yield from post_order_walk(child)
     yield root
+
 
 def pre_order_walk(root: STNode) -> Generator[STNode, None, None]:
     """Generator of STNode objects, from a pre-order walk of the tree starting from root

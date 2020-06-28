@@ -1,16 +1,16 @@
-import networkx as nx # type: ignore
+import networkx as nx  # type: ignore
 from collections import deque
-import pylab # type: ignore
+import pylab  # type: ignore
 
 
-def OID_generator(char:str='a', start_num:int=1):
+def OID_generator(char: str = 'a', start_num: int = 1):
     n = start_num
     while True:
         yield char + str(n)
         n += 1
 
 
-def is_OID(elem:str):
+def is_OID(elem: str):
     if elem[0] == '&' and len(elem) > 1:
         # for char in elem[1:]:         This condition is not used to facilitate testing on test_base
         #     if not char.isdigit():
@@ -63,13 +63,13 @@ def DFS(G, startNode=None):
                 q.append(child)
 
 
-def schema_graph_print(G, data_rep:bool=True):
+def schema_graph_print(G, data_rep: bool = True):
     for edge in G.edges(data=True):
         print(edge)
     print()
 
 
-def schema_graph_draw(G, title:str='title'):
+def schema_graph_draw(G, title: str = 'title'):
     pos = nx.spring_layout(G, k=3)
     edge_labels = nx.get_edge_attributes(G, 'title')
     nx.draw(G, pos, with_labels=True, font_weight='bold')

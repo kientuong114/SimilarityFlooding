@@ -5,7 +5,9 @@ from typing import List
 
 FilePath = str
 
+
 # TODO: update naming convention child -> element
+
 
 def parse_xml(file_path: FilePath):
     """Return the schema tree for the xml file located in file_path
@@ -14,10 +16,10 @@ def parse_xml(file_path: FilePath):
         file_path (str): Relative file path to the xml file
     """
 
-    def leaf_paths(root, path:List[STNode.PathNode]=[]):
+    def leaf_paths(root, path: List[STNode.PathNode] = []):
         # Generator of all root-leaf paths, given an ElementTree node
         path = list(path)
-        path.append(STNode.PathNode(root.tag, {k:None for k in root.keys()}))
+        path.append(STNode.PathNode(root.tag, {k: None for k in root.keys()}))
         if not list(root):
             # Doesn't have children
             yield path
@@ -45,7 +47,7 @@ def parse_xml(file_path: FilePath):
 
 
 def schema_tree2Graph(root: STNode):
-    import networkx as nx # type: ignore
+    import networkx as nx  # type: ignore
 
     oid = sgu.OID_generator(char='&')
     G = nx.DiGraph()
@@ -62,11 +64,11 @@ def schema_tree2Graph(root: STNode):
 
         for i, atb in enumerate(node.attrib.keys()):
             G.add_node(atb, type='literal')
-            G.add_edge(curr_oid, atb, title='attrib', prog_num = i)
+            G.add_edge(curr_oid, atb, title='attrib', prog_num=i)
 
         for i, child in enumerate(node.children_tags):
-            #Given the post-order walk, each child will already have a node
+            # Given the post-order walk, each child will already have a node
             child_oid = oid_map[child]
-            G.add_edge(curr_oid, child_oid, title='child', prog_num = i)
+            G.add_edge(curr_oid, child_oid, title='child', prog_num=i)
 
     return G

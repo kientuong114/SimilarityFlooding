@@ -7,6 +7,7 @@ import similarityflooding.utils.utils as utils
 import networkx as nx
 import sys
 
+
 def test_on_sql_compressed(formula, outfile):
     import similarityflooding.parse.sql_parser as sql_parser
     G1 = compress_graph(sql_parser.sql_ddl2Graph(sql_parser.parse_sql('test_schemas/test_schema_from_paper1.sql')))
@@ -15,16 +16,6 @@ def test_on_sql_compressed(formula, outfile):
     utils.schema_graph_draw(sf.IPG)
     pairs = f.select_filter(sf)
     f.print_pairs(pairs, outfile)
-
-def test_on_sql_compressed():
-    import similarityflooding.parse.sql_parser as sql_parser
-    G1 = compress_graph(sql_parser.sql_ddl2Graph(sql_parser.parse_sql('test_schemas/test_schema_from_paper1.sql')))
-    G2 = compress_graph(sql_parser.sql_ddl2Graph(sql_parser.parse_sql('test_schemas/test_schema_from_paper2.sql')))
-    utils.schema_graph_draw(G2)
-    sf = gen_sf(G1, G2)
-    utils.schema_graph_print(sf.IPG)
-    pairs = f.select_filter(sf)
-    f.print_pairs(pairs)
 
 
 def test_on_sql_uncompressed(formula, outfile=sys.stdout):
@@ -53,17 +44,10 @@ def test_base():
 
 def test_on_xml():
     import similarityflooding.parse.xml_parser as xml_parser
-    Gtemp = xml_parser.schema_tree2Graph(xml_parser.parse_xml('test_schemas/test_schema.xml'))
-    print(nx.get_node_attributes(Gtemp, 'type'))
-    utils.schema_graph_print(Gtemp)
-    G1 = compress_graph(Gtemp)
-    print(nx.get_node_attributes(G1, 'type'))
+
+    G1 = compress_graph(xml_parser.schema_tree2Graph(xml_parser.parse_xml('test_schemas/test_schema.xml')))
     utils.schema_graph_print(G1)
     G2 = compress_graph(xml_parser.schema_tree2Graph(xml_parser.parse_xml('test_schemas/test_schema_2.xml')))
-    node_attributes_A = nx.get_node_attributes(G1, 'type')
-    node_attributes_B = nx.get_node_attributes(G2, 'type')
-    print(node_attributes_A)
-    print(node_attributes_B)
     sf = gen_sf(G1, G2)
     pairs = f.select_filter(sf)
     f.print_pairs(pairs)
@@ -80,11 +64,9 @@ def test_on_xdr(formula, outfile=sys.stdout):
 
 def test_on_xdr_compressed(formula, outfile=sys.stdout):
     import similarityflooding.parse.xdr_parser as xdr_parser
-    Gtemp = xdr_parser.schema_tree2Graph(xdr_parser.parse_xdr('test_schemas/CIDXPOSCHEMA.xdr'))
-    G1 = compress_graph(Gtemp)
+
+    G1 = compress_graph(xdr_parser.schema_tree2Graph(xdr_parser.parse_xdr('test_schemas/CIDXPOSCHEMA.xdr')))
     G2 = compress_graph(xdr_parser.schema_tree2Graph(xdr_parser.parse_xdr('test_schemas/Apertum.xdr')))
-    s1 = utils.schema_graph_print(G1)
-    s2 = utils.schema_graph_print(G2)
     sf = gen_sf(G1, G2, formula=formula)
     pairs = f.select_filter(sf)
     f.print_pairs(pairs, outfile)
@@ -97,7 +79,7 @@ def gen_sf(G1, G2, formula=ipg.fixpoint_incremental):
     #  fixpoint_A
     #  fixpoint_B
     #  fixpoint_C 
-    ipg.similarityFlooding(sf, max_steps=100, verbose=True, fixpoint_formula=formula, tqdm=True)
+    ipg.similarity_flooding(sf, max_steps=100, verbose=True, fixpoint_formula=formula, tqdm=True)
     return sf
 
 

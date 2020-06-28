@@ -6,6 +6,7 @@ from typing import Dict
 FilePath = str
 blacklist = ('minOccurs', 'maxOccurs')
 
+
 def parse_xdr(file_path: FilePath):
     """Return the schema tree for the xdr file located in file_path
 
@@ -31,7 +32,7 @@ def parse_xdr(file_path: FilePath):
             schema_subtree = STNode.STNode.from_path_node(
                 STNode.PathNode(
                     node.attrib['name'],
-                    { k:v for k,v in node.attrib.items() if k != 'name' and k not in blacklist}
+                    {k: v for k, v in node.attrib.items() if k != 'name' and k not in blacklist}
                 )
             )
 
@@ -43,7 +44,7 @@ def parse_xdr(file_path: FilePath):
                 child_node = STNode.STNode.from_path_node(
                     STNode.PathNode(
                         node.attrib['name'] + '.' + child.attrib['type'],
-                        { k:v for k,v in child.attrib.items() if k != 'type' and k not in blacklist}
+                        {k: v for k, v in child.attrib.items() if k != 'type' and k not in blacklist}
                     )
                 )
                 schema_subtree.add_child(child_node)
@@ -89,13 +90,13 @@ def parse_xdr(file_path: FilePath):
         tree_merge(root)
         result.append(root)
 
-    assert(len(result) == 1) # We expect to have actually
+    assert (len(result) == 1)  # We expect to have actually
 
     return result[0]
 
 
 def schema_tree2Graph(root: STNode):
-    import networkx as nx # type: ignore
+    import networkx as nx  # type: ignore
 
     oid = sgu.OID_generator(char='&')
     G = nx.DiGraph()
@@ -112,11 +113,11 @@ def schema_tree2Graph(root: STNode):
 
         for i, atb in enumerate(node.attrib.keys()):
             G.add_node(atb, type='literal')
-            G.add_edge(curr_oid, atb, title='attrib', prog_num = i)
+            G.add_edge(curr_oid, atb, title='attrib', prog_num=i)
 
         for i, child in enumerate(node.children_tags):
-            #Given the post-order walk, each child will already have a node
+            # Given the post-order walk, each child will already have a node
             child_oid = oid_map[child]
-            G.add_edge(curr_oid, child_oid, title='child', prog_num = i)
+            G.add_edge(curr_oid, child_oid, title='child', prog_num=i)
 
     return G

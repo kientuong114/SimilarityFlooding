@@ -9,6 +9,7 @@ import sys
 
 TEST_SCHEMA_PATH = 'test/test_schemas'
 
+
 def xdr_compressed():
     cidxposchema = os.path.join(TEST_SCHEMA_PATH, 'CIDXPOSCHEMA.xdr')
     apertum = os.path.join(TEST_SCHEMA_PATH, 'Apertum.xdr')
@@ -27,13 +28,13 @@ def xdr_compressed():
     sf = ipg.SFGraphs(G1, G2)
 
     print('Executing similarity flooding algorithm:')
-    ipg.similarityFlooding(sf, max_steps=500, verbose=False, fixpoint_formula=ipg.fixpoint_incremental, tqdm=True)
+    ipg.similarity_flooding(sf, max_steps=500, verbose=False, fixpoint_formula=ipg.fixpoint_incremental, tqdm=True)
 
     print('Executing filter algorithm')
     pairs = f.select_filter(sf)
     print('Printing results of filter selection: ')
     f.print_pairs(pairs)
 
+
 if __name__ == "__main__":
     xdr_compressed()
-
