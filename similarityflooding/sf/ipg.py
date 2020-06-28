@@ -1,9 +1,8 @@
-from sf import pairwise_connectivity_graph as pcg
-from parse.xml_parser import schema_tree2Graph, parse_xml
 from collections import defaultdict
-from initialmap import initial_map as im
 import networkx as nx
 from math import sqrt
+import similarityflooding.sf.pcg as pcg
+from similarityflooding.initialmap import initial_map as im
 
 
 class SFGraphs:
@@ -125,7 +124,7 @@ def generate(sfg, default_sim=0.00001, prop_func=fast_inverse_product):
 
     Args:
         sfg: the SFGraph instance which holds the current graphs
-        sim: a constant value that will be used as similarity for all nodes in IPG.
+        default_sim: a constant value that will be used as similarity for all nodes in IPG.
         prop_func: a function which takes a SFGraphs object and returns a dictionary
                 with edge labels as keys and the coefficient as value
 
@@ -293,7 +292,6 @@ def flooding_step(ipg, fixpoint_formula, epsilon=0.000000000000002):
         delta_norm += (node_data['curr_sim'] - new_curr_sim) ** 2
         nx.set_node_attributes(ipg, {node: new_curr_sim}, 'curr_sim')
 
-    #print("\nFlooding step: " + str(sqrt(delta_norm)) + "\ndelta_norm: " + str(delta_norm) + "\n")
     if sqrt(delta_norm) < epsilon:
         return False
 
@@ -356,9 +354,3 @@ def similarityFlooding(sf, max_steps=1000, verbose=False, fixpoint_formula=fixpo
             print("Terminated: residual vector has length less than epsilon")
             break
     print("Terminated: max steps reached")
-
-
-if __name__ == "__main__":
-    G1 = schema_tree2Graph(parse_xml('test_schemas/test_schema.xml'))
-    G2 = schema_tree2Graph(parse_xml('test_schemas/test_schema_2.xml'))
-    similarityFlooding(SFGraphs(G1, G2), max_steps=1000, verbose=True, fixpoint_formula=fixpoint_incremental)

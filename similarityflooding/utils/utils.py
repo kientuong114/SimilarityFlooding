@@ -44,26 +44,6 @@ def combine_oid_to_name_pairs(G1, G2, pairs):
     return final
 
 
-# unused
-# def BFS(G, startNode=None):
-#     if not startNode:
-#         startNode = list(G.nodes())[0]
-#
-#     q = deque((startNode,))
-#     visited = set()
-#     visiting = set((startNode,))
-#
-#     while q:
-#         curr = q.popleft()
-#         visiting.remove(curr)
-#         yield curr
-#         visited.add(curr)
-#         for child in G.neighbors(curr):
-#             if child not in visited and child not in visiting:
-#                 visiting.add(child)
-#                 q.append(child)
-
-
 def DFS(G, startNode=None):
     if not startNode:
         startNode = list(G.nodes())[0]

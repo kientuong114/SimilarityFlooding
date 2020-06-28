@@ -1,6 +1,7 @@
 import xml.etree.ElementTree as et
-from utils import schema_graph_utils as sgu
-from parse.STNode import *
+from similarityflooding.utils import utils as sgu
+from similarityflooding.parse import STNode
+from typing import Dict
 
 FilePath = str
 blacklist = ('minOccurs', 'maxOccurs')
@@ -16,7 +17,7 @@ def parse_xdr(file_path: FilePath):
 
     xdr_tree = et.parse(file_path)
     root = xdr_tree.getroot()
-    root_node = STNode.from_path_node(PathNode(root.tag, root.attrib))
+    root_node = STNode.STNode.from_path_node(STNode.PathNode(root.tag, root.attrib))
 
     # This is a dict containing the ElementType name as key and its hierarchy
     # as value
@@ -27,8 +28,8 @@ def parse_xdr(file_path: FilePath):
         # then merging them together
 
         if 'ElementType' in node.tag or 'AttributeType' in node.tag:
-            schema_subtree = STNode.from_path_node(
-                PathNode(
+            schema_subtree = STNode.STNode.from_path_node(
+                STNode.PathNode(
                     node.attrib['name'],
                     { k:v for k,v in node.attrib.items() if k != 'name' and k not in blacklist}
                 )
@@ -39,8 +40,8 @@ def parse_xdr(file_path: FilePath):
                     # We currently ignore natural language descriptions and we defer the
                     # analysis of Attribute and Element Typs on successive iterations
                     continue
-                child_node = STNode.from_path_node(
-                    PathNode(
+                child_node = STNode.STNode.from_path_node(
+                    STNode.PathNode(
                         node.attrib['name'] + '.' + child.attrib['type'],
                         { k:v for k,v in child.attrib.items() if k != 'type' and k not in blacklist}
                     )
@@ -78,7 +79,7 @@ def parse_xdr(file_path: FilePath):
             tag = get_last_tag(child.tag)
             if tag in schema_trees:
                 # We can merge trees:
-                new_root = merge_path_nodes(child, schema_trees[tag])
+                new_root = STNode.merge_path_nodes(child, schema_trees[tag])
                 del schema_trees[tag]
                 tree_merge(new_root)
 
@@ -101,7 +102,7 @@ def schema_tree2Graph(root: STNode):
 
     oid_map = {}
 
-    for node in post_order_walk(root):
+    for node in STNode.post_order_walk(root):
         curr_oid = next(oid)
         oid_map.update({node.tag: curr_oid})
 
@@ -119,8 +120,3 @@ def schema_tree2Graph(root: STNode):
             G.add_edge(curr_oid, child_oid, title='child', prog_num = i)
 
     return G
-
-if __name__ == "__main__":
-    st = parse_xdr('test/test_schemas/CIDXPOSCHEMA.xdr')
-    g = schema_tree2Graph(st)
-    sgu.schema_graph_print(g)

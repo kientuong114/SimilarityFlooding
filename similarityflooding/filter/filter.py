@@ -1,7 +1,4 @@
-from parse.sql_parser import sql_ddl2Graph
-from parse.sql_parser import parse_sql
-from sf import induced_propagation_graph as ipg
-from utils import schema_graph_utils as sgu
+from similarityflooding.utils import utils as sgu
 import networkx as nx
 import sys
 
@@ -162,14 +159,3 @@ def print_pairs(pairs, f=sys.stdout):
             print("no_match_found", file=f)
         else:
             print(p[1], file=f)
-
-
-if __name__ == "__main__":
-    G1 = sql_ddl2Graph(parse_sql('test_schemas/test_schema_from_paper1.sql'))
-    G2 = sql_ddl2Graph(parse_sql('test_schemas/test_schema_from_paper2.sql'))
-    sf = ipg.SFGraphs(G1, G2)
-    ipg.similarityFlooding(sf, max_steps=1000, verbose=False, fixpoint_formula=ipg.fixpoint_incremental)
-
-    pairs = select_filter(sf)
-
-    print(sgu.combine_oid_to_name_pairs(G1, G2, pairs))

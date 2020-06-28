@@ -1,6 +1,7 @@
 import xml.etree.ElementTree as et
-from utils import schema_graph_utils as sgu
-from parse.STNode import *
+from similarityflooding.utils import utils as sgu
+from similarityflooding.parse import STNode
+from typing import List
 
 FilePath = str
 
@@ -13,10 +14,10 @@ def parse_xml(file_path: FilePath):
         file_path (str): Relative file path to the xml file
     """
 
-    def leaf_paths(root, path:List[PathNode]=[]):
+    def leaf_paths(root, path:List[STNode.PathNode]=[]):
         # Generator of all root-leaf paths, given an ElementTree node
         path = list(path)
-        path.append(PathNode(root.tag, {k:None for k in root.keys()}))
+        path.append(STNode.PathNode(root.tag, {k:None for k in root.keys()}))
         if not list(root):
             # Doesn't have children
             yield path
@@ -26,14 +27,14 @@ def parse_xml(file_path: FilePath):
 
     xml_tree = et.parse(file_path)
     root = xml_tree.getroot()
-    schema_tree = STNode.from_path_node(PathNode(root.tag, root.attrib))
+    schema_tree = STNode.STNode.from_path_node(STNode.PathNode(root.tag, root.attrib))
     g = leaf_paths(root)
 
     for path in g:
         curr = schema_tree
         for node in path[1:]:
             if node.tag not in curr.children_tags:
-                succ = STNode.from_path_node(node)
+                succ = STNode.STNode.from_path_node(node)
                 curr.add_child(succ)
             else:
                 succ = curr.children[node.tag]
@@ -51,7 +52,7 @@ def schema_tree2Graph(root: STNode):
 
     oid_map = {}
 
-    for node in post_order_walk(root):
+    for node in STNode.post_order_walk(root):
         curr_oid = next(oid)
         oid_map.update({node.tag: curr_oid})
 
@@ -69,7 +70,3 @@ def schema_tree2Graph(root: STNode):
             G.add_edge(curr_oid, child_oid, title='child', prog_num = i)
 
     return G
-
-if __name__ == "__main__":
-    st = parse_xml('test/test_schemas/test_schema.xml')
-    sgu.schema_graph_draw(schema_tree2Graph(st))

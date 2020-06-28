@@ -1,6 +1,5 @@
 import re
-from utils import schema_graph_utils as sgu
-
+from similarityflooding.utils import utils as sgu
 
 def parse_sql(path):
     """Clears and returns the sql input file for sql_ddl2Graph to process
@@ -99,16 +98,3 @@ def sql_ddl2Graph(data):
             G.add_edge(oid_column, oid_SQLType, title='SQLtype')
 
     return G
-
-def main():
-    #import initialmap as im
-    #import pairwise_connectivity_graph as pcg
-
-    file_path = "test_schemas/test_schema_from_paper1.sql"
-    G = parse_sql(file_path)
-    file_path = "test_schemas/test_schema_from_paper2.sql"
-    H = parse_sql(file_path)
-
-    #pairwise_graph = pcg.generate(G, H)
-
-    #induced_propagation_graph = ipg.generate(ipg.SimilarityFlooding(G, H, pairwise_graph))
